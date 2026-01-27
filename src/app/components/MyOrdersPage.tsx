@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Package, Calendar, IndianRupee, XCircle, MapPin } from 'lucide-react';
+import { Package, Calendar, IndianRupee, XCircle, MapPin, Truck, CheckCircle, Clock, Box } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { Button } from '@/app/components/ui/button';
@@ -74,8 +74,12 @@ export function MyOrdersPage() {
         return 'bg-yellow-600';
       case 'Confirmed':
         return 'bg-blue-600';
-      case 'Approved':
-        return 'bg-blue-600';
+      case 'Processing':
+        return 'bg-indigo-600';
+      case 'Shipped':
+        return 'bg-purple-600';
+      case 'Out for Delivery':
+        return 'bg-orange-600';
       case 'Delivered':
         return 'bg-green-600';
       case 'Cancelled':
@@ -85,8 +89,43 @@ export function MyOrdersPage() {
     }
   };
 
+  const getStatusIcon = (status: Order['status']) => {
+    switch (status) {
+      case 'Pending':
+        return <Clock className="w-4 h-4" />;
+      case 'Confirmed':
+      case 'Processing':
+        return <Box className="w-4 h-4" />;
+      case 'Shipped':
+      case 'Out for Delivery':
+        return <Truck className="w-4 h-4" />;
+      case 'Delivered':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'Cancelled':
+        return <XCircle className="w-4 h-4" />;
+      default:
+        return <Package className="w-4 h-4" />;
+    }
+  };
+
+  const getTrackingSteps = () => {
+    return [
+      { status: 'Pending', label: 'Order Placed' },
+      { status: 'Confirmed', label: 'Confirmed' },
+      { status: 'Processing', label: 'Processing' },
+      { status: 'Shipped', label: 'Shipped' },
+      { status: 'Out for Delivery', label: 'Out for Delivery' },
+      { status: 'Delivered', label: 'Delivered' }
+    ];
+  };
+
+  const getStatusIndex = (status: Order['status']) => {
+    const steps = getTrackingSteps();
+    return steps.findIndex(step => step.status === status);
+  };
+
   const canCancelOrder = (order: Order) => {
-    return order.status === 'Pending' || order.status === 'Confirmed';
+    return order.status === 'Pending' || order.status === 'Confirmed' || order.status === 'Processing';
   };
 
   const formatDate = (dateString: string) => {
@@ -187,6 +226,76 @@ export function MyOrdersPage() {
                     </div>
                   )}
 
+                  {/* Order Tracking Timeline */}
+                  {order.status !== 'Cancelled' && (
+                    <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
+                      <h4 className="font-semibold text-sm mb-4 flex items-center gap-2">
+                        <Truck className="w-4 h-4 text-red-600" />
+                        Order Tracking
+                      </h4>
+                      <div className="relative">
+                        {/* Progress Line */}
+                        <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200" style={{ width: 'calc(100% - 40px)', marginLeft: '20px' }}>
+                          <div 
+                            className="h-full bg-red-600 transition-all duration-500"
+                            style={{ width: `${(getStatusIndex(order.status) / (getTrackingSteps().length - 1)) * 100}%` }}
+                          />
+                        </div>
+                        
+                        {/* Tracking Steps */}
+                        <div className="relative flex justify-between">
+                          {getTrackingSteps().map((step, index) => {
+                            const currentIndex = getStatusIndex(order.status);
+                            const isCompleted = index <= currentIndex;
+                            const isCurrent = index === currentIndex;
+                            
+                            return (
+                              <div key={step.status} className="flex flex-col items-center" style={{ flex: '1' }}>
+                                {/* Circle */}
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                                  isCompleted 
+                                    ? 'bg-red-600 border-red-600 text-white' 
+                                    : 'bg-white border-gray-300 text-gray-400'
+                                } ${
+                                  isCurrent ? 'ring-4 ring-red-100 scale-110' : ''
+                                }`}>
+                                  {isCompleted ? (
+                                    <CheckCircle className="w-5 h-5" />
+                                  ) : (
+                                    <div className="w-3 h-3 rounded-full bg-gray-300" />
+                                  )}
+                                </div>
+                                
+                                {/* Label */}
+                                <p className={`text-xs mt-2 text-center font-medium max-w-[80px] ${
+                                  isCompleted ? 'text-gray-900' : 'text-gray-400'
+                                }`}>
+                                  {step.label}
+                                </p>
+                                
+                                {/* Timestamp for current/completed */}
+                                {isCompleted && order.trackingHistory && (
+                                  <p className="text-[10px] text-gray-500 mt-1">
+                                    {order.trackingHistory.find(e => e.status === step.status) 
+                                      ? new Date(order.trackingHistory.find(e => e.status === step.status)!.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+                                      : ''}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      {/* Estimated Delivery */}
+                      {order.estimatedDelivery && order.status !== 'Delivered' && (
+                        <div className="mt-4 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-800">
+                          <strong>Estimated Delivery:</strong> {new Date(order.estimatedDelivery).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Status Message */}
                   <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                     {order.status === 'Pending' && (
@@ -196,12 +305,22 @@ export function MyOrdersPage() {
                     )}
                     {order.status === 'Confirmed' && (
                       <p className="text-sm text-gray-700">
-                        <strong>Status:</strong> Your order has been confirmed and is being prepared for delivery.
+                        <strong>Status:</strong> Your order has been confirmed and will be processed soon.
                       </p>
                     )}
-                    {order.status === 'Approved' && (
+                    {order.status === 'Processing' && (
                       <p className="text-sm text-gray-700">
-                        <strong>Status:</strong> Your order has been approved and is being prepared for delivery.
+                        <strong>Status:</strong> Your order is being prepared for shipment.
+                      </p>
+                    )}
+                    {order.status === 'Shipped' && (
+                      <p className="text-sm text-blue-700">
+                        <strong>Status:</strong> Your order has been shipped and is on the way!
+                      </p>
+                    )}
+                    {order.status === 'Out for Delivery' && (
+                      <p className="text-sm text-orange-700">
+                        <strong>Status:</strong> Your order is out for delivery and will arrive soon.
                       </p>
                     )}
                     {order.status === 'Delivered' && (

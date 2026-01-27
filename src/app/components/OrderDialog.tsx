@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShoppingCart, IndianRupee, Minus, Plus, MapPin, User, Phone } from 'lucide-react';
+import { ShoppingCart, IndianRupee, Minus, Plus, MapPin, User, Phone, CreditCard, Wallet } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ interface OrderDialogProps {
 export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogProps) {
   const [quantity, setQuantity] = useState(1);
   const [step, setStep] = useState<'product' | 'address' | 'confirmation'>('product');
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'online'>('cod');
   const [address, setAddress] = useState<Address>({
     fullName: '',
     phoneNumber: '',
@@ -35,12 +36,15 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
     pincode: ''
   });
   const [errors, setErrors] = useState<Partial<Record<keyof Address, string>>>({});
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeVerified, setPincodeVerified] = useState(false);
 
   if (!product) return null;
 
   const handleClose = () => {
     setQuantity(1);
     setStep('product');
+    setPaymentMethod('cod');
     setAddress({
       fullName: '',
       phoneNumber: '',
@@ -51,7 +55,53 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
       pincode: ''
     });
     setErrors({});
+    setPincodeVerified(false);
     onClose();
+  };
+
+  const validatePincode = async (pincode: string) => {
+    if (!/^\d{6}$/.test(pincode)) {
+      return;
+    }
+
+    setPincodeLoading(true);
+    setPincodeVerified(false);
+    
+    try {
+      // Using India Post API for pincode validation
+      const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+      const data = await response.json();
+      
+      if (data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+        const location = data[0].PostOffice[0];
+        setAddress(prev => ({
+          ...prev,
+          city: location.District,
+          state: location.State,
+          pincode: pincode
+        }));
+        setPincodeVerified(true);
+        setErrors(prev => ({ ...prev, pincode: undefined, city: undefined, state: undefined }));
+      } else {
+        setErrors(prev => ({ ...prev, pincode: 'Invalid pincode. Please enter a valid 6-digit pincode.' }));
+        setPincodeVerified(false);
+      }
+    } catch (error) {
+      setErrors(prev => ({ ...prev, pincode: 'Unable to verify pincode. Please check and try again.' }));
+      setPincodeVerified(false);
+    } finally {
+      setPincodeLoading(false);
+    }
+  };
+
+  const handlePincodeChange = (pincode: string) => {
+    setAddress({ ...address, pincode });
+    setPincodeVerified(false);
+    
+    // Auto-validate when 6 digits are entered
+    if (pincode.length === 6) {
+      validatePincode(pincode);
+    }
   };
 
   const validateAddress = (): boolean => {
@@ -83,6 +133,8 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
       newErrors.pincode = 'Pincode is required';
     } else if (!/^\d{6}$/.test(address.pincode)) {
       newErrors.pincode = 'Enter a valid 6-digit pincode';
+    } else if (!pincodeVerified) {
+      newErrors.pincode = 'Please enter a valid pincode to auto-fill city and state';
     }
     
     setErrors(newErrors);
@@ -284,46 +336,67 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2 md:col-span-3">
+                <Label htmlFor="pincode">Pincode</Label>
+                <div className="relative">
+                  <Input
+                    id="pincode"
+                    placeholder="Enter 6-digit pincode"
+                    value={address.pincode}
+                    onChange={(e) => handlePincodeChange(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className={errors.pincode ? 'border-red-500' : pincodeVerified ? 'border-green-500' : ''}
+                    maxLength={6}
+                  />
+                  {pincodeLoading && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                  {pincodeVerified && !pincodeLoading && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {errors.pincode && (
+                  <p className="text-sm text-red-600">{errors.pincode}</p>
+                )}
+                {pincodeVerified && (
+                  <p className="text-sm text-green-600">✓ Pincode verified - City and State auto-filled</p>
+                )}
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city">City / District</Label>
                 <Input
                   id="city"
-                  placeholder=""
+                  placeholder="Auto-filled from pincode"
                   value={address.city}
                   onChange={(e) => setAddress({ ...address, city: e.target.value })}
-                  className={errors.city ? 'border-red-500' : ''}
+                  className={errors.city ? 'border-red-500' : pincodeVerified ? 'bg-gray-50' : ''}
+                  readOnly={pincodeVerified}
                 />
                 {errors.city && (
                   <p className="text-sm text-red-600">{errors.city}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="state">State</Label>
                 <Input
                   id="state"
-                  placeholder=""
+                  placeholder="Auto-filled from pincode"
                   value={address.state}
                   onChange={(e) => setAddress({ ...address, state: e.target.value })}
-                  className={errors.state ? 'border-red-500' : ''}
+                  className={errors.state ? 'border-red-500' : pincodeVerified ? 'bg-gray-50' : ''}
+                  readOnly={pincodeVerified}
                 />
                 {errors.state && (
                   <p className="text-sm text-red-600">{errors.state}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="pincode">Pincode</Label>
-                <Input
-                  id="pincode"
-                  placeholder=""
-                  value={address.pincode}
-                  onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
-                  className={errors.pincode ? 'border-red-500' : ''}
-                  maxLength={6}
-                />
-                {errors.pincode && (
-                  <p className="text-sm text-red-600">{errors.pincode}</p>
                 )}
               </div>
             </div>
@@ -363,6 +436,58 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
                 <p className="text-gray-600">
                   {address.city}, {address.state} - {address.pincode}
                 </p>
+              </div>
+            </div>
+
+            {/* Payment Method Selection */}
+            <div className="border rounded-lg p-4">
+              <h4 className="font-semibold mb-3">Payment Method</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
+                    paymentMethod === 'cod'
+                      ? 'border-red-600 bg-red-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    paymentMethod === 'cod' ? 'border-red-600' : 'border-gray-300'
+                  }`}>
+                    {paymentMethod === 'cod' && (
+                      <div className="w-3 h-3 rounded-full bg-red-600" />
+                    )}
+                  </div>
+                  <Wallet className="w-5 h-5 text-gray-600" />
+                  <div className="text-left">
+                    <p className="font-medium">Cash on Delivery</p>
+                    <p className="text-xs text-gray-500">Pay when you receive</p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('online')}
+                  className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
+                    paymentMethod === 'online'
+                      ? 'border-red-600 bg-red-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    paymentMethod === 'online' ? 'border-red-600' : 'border-gray-300'
+                  }`}>
+                    {paymentMethod === 'online' && (
+                      <div className="w-3 h-3 rounded-full bg-red-600" />
+                    )}
+                  </div>
+                  <CreditCard className="w-5 h-5 text-gray-600" />
+                  <div className="text-left">
+                    <p className="font-medium">Pay Online</p>
+                    <p className="text-xs text-gray-500">UPI, Card, Net Banking</p>
+                  </div>
+                </button>
               </div>
             </div>
 
@@ -408,8 +533,17 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
                 Edit Address
               </Button>
               <Button onClick={handleConfirm} className="bg-red-600 hover:bg-red-700">
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Confirm Order
+                {paymentMethod === 'online' ? (
+                  <>
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Proceed to Payment
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="w-4 h-4 mr-2" />
+                    Confirm Order
+                  </>
+                )}
               </Button>
             </>
           )}

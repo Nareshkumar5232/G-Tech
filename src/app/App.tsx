@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Toaster } from '@/app/components/ui/sonner';
-import { Header } from './components/Header';
+import { MessageCircle } from 'lucide-react';
+import { Sidebar } from './components/Sidebar';
+import { TopBar } from './components/TopBar';
 import { Footer } from './components/Footer';
 import { HomePage } from './components/HomePage';
 import { ProductListPage } from './components/ProductListPage';
@@ -30,6 +32,7 @@ export default function App() {
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [forceUpdate, setForceUpdate] = useState(0);
+  const [sidebarWidth, setSidebarWidth] = useState(280);
 
   // Handle navigation
   const handleNavigate = (page: string) => {
@@ -72,14 +75,29 @@ export default function App() {
     setForceUpdate(prev => prev + 1);
   };
 
-  // Determine if header and footer should be shown
-  const showHeaderFooter = !['login', 'register'].includes(currentPage);
+  // Determine if sidebar and footer should be shown
+  const showSidebarFooter = !['login', 'register'].includes(currentPage);
 
   return (
-    <div className="flex flex-col min-h-screen m-0 p-0">
-      {showHeaderFooter && <Header currentPage={currentPage} onNavigate={handleNavigate} key={forceUpdate} />}
+    <div className="min-h-screen m-0 p-0 bg-gray-50">
+      {showSidebarFooter && (
+        <Sidebar 
+          currentPage={currentPage} 
+          onNavigate={handleNavigate} 
+          onWidthChange={setSidebarWidth}
+          key={forceUpdate} 
+        />
+      )}
 
-      <main className="flex-1 m-0 p-0">
+      <div 
+        className="flex flex-col min-h-screen transition-all duration-300 ease-in-out"
+        style={{
+          marginLeft: showSidebarFooter ? `${sidebarWidth}px` : '0',
+        }}
+      >
+        {showSidebarFooter && <TopBar currentPage={currentPage} onNavigate={handleNavigate} key={forceUpdate} />}
+        
+        <main className="flex-1">
         {/* Home Page */}
         {currentPage === 'home' && (
           <HomePage onNavigate={handleNavigate} onOrderClick={handleOrderClick} />
@@ -119,7 +137,20 @@ export default function App() {
         {currentPage === 'my-orders' && <MyOrdersPage />}
       </main>
 
-      {showHeaderFooter && <Footer />}
+      {showSidebarFooter && <Footer />}
+      </div>
+
+      {/* WhatsApp Floating Button */}
+      <a
+        href="https://wa.me/919342798344"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl hover:shadow-green-500/50 transition-all duration-300 hover:scale-110 group"
+        aria-label="Chat on WhatsApp"
+      >
+        <MessageCircle className="w-6 h-6" />
+        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+      </a>
 
       {/* Order Dialog */}
       <OrderDialog

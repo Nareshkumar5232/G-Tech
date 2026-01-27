@@ -1,4 +1,4 @@
-import { User, Product, Order, Address } from '@/types';
+import { User, Product, Order, Address, TrackingEvent } from '@/types';
 import { initialProducts } from './mockData';
 
 const STORAGE_KEYS = {
@@ -138,6 +138,14 @@ export const createOrder = (
   address: Address
 ): Order => {
   const orders = getOrders();
+  const now = new Date();
+  const estimatedDelivery = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
+  
+  const initialTracking: TrackingEvent = {
+    status: 'Pending',
+    message: 'Order placed successfully',
+    timestamp: now.toISOString()
+  };
   
   const newOrder: Order = {
     id: `order-${Date.now()}`,
@@ -152,8 +160,10 @@ export const createOrder = (
     totalAmount: product.price * quantity,
     status: 'Pending',
     address,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    trackingHistory: [initialTracking],
+    estimatedDelivery: estimatedDelivery.toISOString(),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString()
   };
   
   orders.push(newOrder);
@@ -167,9 +177,28 @@ export const updateOrderStatus = (orderId: string, status: Order['status']): Ord
   
   if (index === -1) return null;
   
+  const statusMessages: Record<Order['status'], string> = {
+    'Pending': 'Order is being reviewed',
+    'Confirmed': 'Order confirmed and will be processed soon',
+    'Processing': 'Order is being prepared for shipment',
+    'Shipped': 'Order has been shipped',
+    'Out for Delivery': 'Order is out for delivery',
+    'Delivered': 'Order has been delivered successfully',
+    'Cancelled': 'Order has been cancelled'
+  };
+  
+  const newTrackingEvent: TrackingEvent = {
+    status,
+    message: statusMessages[status],
+    timestamp: new Date().toISOString()
+  };
+  
+  const existingHistory = orders[index].trackingHistory || [];
+  
   orders[index] = {
     ...orders[index],
     status,
+    trackingHistory: [...existingHistory, newTrackingEvent],
     updatedAt: new Date().toISOString()
   };
   
@@ -183,15 +212,24 @@ export const cancelOrder = (orderId: string, cancellationReason: string): Order 
   
   if (index === -1) return null;
   
-  // Only allow cancellation for Pending or Confirmed orders
-  if (orders[index].status !== 'Pending' && orders[index].status !== 'Confirmed') {
+  // Only allow cancellation for Pending, Confirmed, or Processing orders
+  if (orders[index].status !== 'Pending' && orders[index].status !== 'Confirmed' && orders[index].status !== 'Processing') {
     return null;
   }
+  
+  const cancellationEvent: TrackingEvent = {
+    status: 'Cancelled',
+    message: `Order cancelled: ${cancellationReason}`,
+    timestamp: new Date().toISOString()
+  };
+  
+  const existingHistory = orders[index].trackingHistory || [];
   
   orders[index] = {
     ...orders[index],
     status: 'Cancelled',
     cancellationReason,
+    trackingHistory: [...existingHistory, cancellationEvent],
     updatedAt: new Date().toISOString()
   };
   

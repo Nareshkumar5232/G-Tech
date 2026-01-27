@@ -38,7 +38,7 @@ export interface Address {
   pincode: string;
 }
 
-export type OrderStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Approved' | 'Delivered';
+export type OrderStatus = 'Pending' | 'Confirmed' | 'Processing' | 'Shipped' | 'Out for Delivery' | 'Delivered' | 'Cancelled';
 
 export interface Order {
   id: string;
@@ -53,7 +53,15 @@ export interface Order {
   totalAmount: number;
   status: OrderStatus;
   address: Address;
+  trackingHistory: TrackingEvent[];
+  estimatedDelivery?: string;
   cancellationReason?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TrackingEvent {
+  status: OrderStatus;
+  message: string;
+  timestamp: string;
 }

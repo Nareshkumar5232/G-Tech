@@ -76,30 +76,60 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
+      {/* Quick Stats */}
+      <section className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-6 py-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <button
+                  key={category.page}
+                  onClick={() => onNavigate(category.page)}
+                  className="group relative overflow-hidden bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 text-left border border-gray-100 hover:border-red-200"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-lg bg-gradient-to-br ${category.gradient} text-white`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors">
+                        {category.title}
+                      </h3>
+                      <p className="text-xs text-gray-500">{category.description}</p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
-      <section className="relative bg-white text-gray-900">
-        
-        <div className="container mx-auto px-4 py-20 md:py-32 relative">
-          <div className="max-w-4xl">
-            <div className="inline-block px-4 py-2 bg-red-600/20 border border-red-600 rounded-full text-sm mb-6">
+      <section className="bg-white text-gray-900 py-12">
+        <div className="container mx-auto px-6">
+          <div className="max-w-3xl">
+            <div className="inline-block px-4 py-2 bg-red-600/10 border border-red-600 rounded-full text-sm mb-4 text-red-600">
               ✨ Your Trusted Tech Partner in Chennai
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
               New & Used Laptops at
               <span className="text-red-600"> Best Prices</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
               Quality computers, accessories, networking & CCTV solutions for your home and business needs.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => onNavigate('all-products')}
                 size="lg"
-                className="bg-red-600 hover:bg-red-700 text-lg px-8 py-6"
+                className="bg-red-600 hover:bg-red-700 text-white"
               >
                 Browse All Products
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -108,7 +138,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                 onClick={() => onNavigate('used-laptops')}
                 size="lg"
                 variant="outline"
-                className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white text-lg px-8 py-6"
+                className="border-gray-300 text-gray-900 hover:bg-gray-100 hover:text-gray-900"
               >
                 View Used Laptops
               </Button>
@@ -118,23 +148,22 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       </section>
 
       {/* Accessories Hero Section */}
-      <section className="py-16 bg-white text-gray-900 relative overflow-hidden">
-        
-        <div className="container mx-auto px-4 relative">
-          <div className="text-center mb-12">
-            <div className="inline-block px-6 py-2 bg-red-50 border border-red-200 rounded-full text-sm mb-4">
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-8">
+            <div className="inline-block px-6 py-2 bg-red-50 border border-red-200 rounded-full text-sm mb-3">
               💎 Premium Quality Accessories
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
               Best Laptop Accessories at Affordable Prices
             </h2>
-            <p className="text-xl text-gray-600 mb-6 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 mb-4 max-w-2xl mx-auto">
               Upgrade your laptop experience with our handpicked selection of high-quality accessories
             </p>
           </div>
 
           {/* Featured Accessories Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-6">
             {featuredAccessories.map((accessory) => (
               <Card key={accessory.id} className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white">
                 <CardContent className="p-4">
@@ -179,7 +208,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
             <Button
               onClick={() => onNavigate('accessories')}
               size="lg"
-              className="bg-red-600 text-white hover:bg-red-700 font-semibold px-8 py-6 text-lg"
+              className="bg-red-600 text-white hover:bg-red-700"
             >
               View All Accessories
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -188,49 +217,13 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Browse by Category</h2>
-            <p className="text-gray-600 text-lg">Find exactly what you're looking for</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category) => {
-              const Icon = category.icon;
-              return (
-                <button
-                  key={category.page}
-                  onClick={() => onNavigate(category.page)}
-                  className="group relative overflow-hidden bg-white rounded-xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 text-left"
-                >
-                  <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-0 group-hover:opacity-10 transition-opacity`} />
-                  
-                  <div className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${category.gradient} text-white mb-4`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  
-                  <h3 className="text-xl font-semibold mb-2 group-hover:text-red-600 transition-colors">
-                    {category.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">{category.description}</p>
-                  
-                  <div className="flex items-center text-red-600 text-sm font-medium group-hover:gap-2 transition-all">
-                    Explore <ArrowRight className="w-4 h-4 ml-1" />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      {/* Categories Section - Removed as it's now in Quick Stats */}
 
       {/* Featured Products */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Products</h2>
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Featured Products</h2>
             <p className="text-gray-600 text-lg">Handpicked deals just for you</p>
           </div>
 
@@ -247,19 +240,19 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose G-TECH?</h2>
+      <section className="py-12 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Why Choose G-TECH?</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <div key={index} className="text-center">
+                <div key={index} className="text-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition-shadow">
                   <div className="inline-flex p-4 rounded-full bg-red-600 mb-4">
-                    <Icon className="w-8 h-8" />
+                    <Icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold mb-2 text-gray-900">{feature.title}</h3>
                   <p className="text-gray-600">{feature.description}</p>
@@ -271,27 +264,27 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+      <section className="py-12 bg-white text-gray-900">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">
             Ready to Find Your Perfect Device?
           </h2>
-          <p className="text-xl mb-8 text-gray-600">
+          <p className="text-lg mb-6 text-gray-600">
             Visit our store or browse online to get started
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               onClick={() => onNavigate('contact')}
               size="lg"
               variant="outline"
-              className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white text-lg px-8 py-6"
+              className="border-gray-300 text-gray-900 hover:bg-gray-100 hover:text-gray-900"
             >
               Contact Us
             </Button>
             <Button
               onClick={() => onNavigate('all-products')}
               size="lg"
-              className="bg-red-600 text-white hover:bg-red-700 text-lg px-8 py-6"
+              className="bg-red-600 text-white hover:bg-red-700"
             >
               Start Shopping
               <ArrowRight className="ml-2 w-5 h-5" />
