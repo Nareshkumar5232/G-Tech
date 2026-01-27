@@ -76,10 +76,10 @@ export default function App() {
   const showHeaderFooter = !['login', 'register'].includes(currentPage);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen m-0 p-0">
       {showHeaderFooter && <Header currentPage={currentPage} onNavigate={handleNavigate} key={forceUpdate} />}
 
-      <main className="flex-1">
+      <main className="flex-1 m-0 p-0">
         {/* Home Page */}
         {currentPage === 'home' && (
           <HomePage onNavigate={handleNavigate} onOrderClick={handleOrderClick} />

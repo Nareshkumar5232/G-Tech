@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Lock, AlertCircle } from 'lucide-react';
+import { Mail, Lock, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
@@ -45,7 +45,17 @@ export function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-red-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <div className="w-full max-w-md">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onNavigate('home')}
+          className="mb-4 text-white hover:text-white hover:bg-white/10 flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </Button>
+        <Card className="w-full">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
             <div className="bg-red-600 p-3 rounded-lg">
@@ -124,6 +134,7 @@ export function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps) {
           </CardFooter>
         </form>
       </Card>
+      </div>
     </div>
   );
 }

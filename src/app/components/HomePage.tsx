@@ -76,10 +76,9 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-gray-900 via-black to-red-900 text-white">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii4wNSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9nPjwvc3ZnPg==')] opacity-10" />
+      <section className="relative bg-white text-gray-900">
         
         <div className="container mx-auto px-4 py-20 md:py-32 relative">
           <div className="max-w-4xl">
@@ -92,7 +91,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
               <span className="text-red-600"> Best Prices</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
               Quality computers, accessories, networking & CCTV solutions for your home and business needs.
             </p>
             
@@ -109,7 +108,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                 onClick={() => onNavigate('used-laptops')}
                 size="lg"
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-black text-lg px-8 py-6"
+                className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white text-lg px-8 py-6"
               >
                 View Used Laptops
               </Button>
@@ -119,18 +118,17 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       </section>
 
       {/* Accessories Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii4xIiBzdHJva2Utd2lkdGg9IjIiLz48L2c+PC9zdmc+')] opacity-20" />
+      <section className="py-16 bg-white text-gray-900 relative overflow-hidden">
         
         <div className="container mx-auto px-4 relative">
           <div className="text-center mb-12">
-            <div className="inline-block px-6 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full text-sm mb-4">
+            <div className="inline-block px-6 py-2 bg-red-50 border border-red-200 rounded-full text-sm mb-4">
               💎 Premium Quality Accessories
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Best Laptop Accessories at Affordable Prices
             </h2>
-            <p className="text-xl text-red-100 mb-6 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 mb-6 max-w-2xl mx-auto">
               Upgrade your laptop experience with our handpicked selection of high-quality accessories
             </p>
           </div>
@@ -181,7 +179,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
             <Button
               onClick={() => onNavigate('accessories')}
               size="lg"
-              className="bg-white text-red-600 hover:bg-gray-100 font-semibold px-8 py-6 text-lg"
+              className="bg-red-600 text-white hover:bg-red-700 font-semibold px-8 py-6 text-lg"
             >
               View All Accessories
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -191,7 +189,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Browse by Category</h2>
@@ -229,7 +227,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       </section>
 
       {/* Featured Products */}
-      <section className="py-16">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Products</h2>
@@ -249,7 +247,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-black text-white">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose G-TECH?</h2>
@@ -263,8 +261,8 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                   <div className="inline-flex p-4 rounded-full bg-red-600 mb-4">
                     <Icon className="w-8 h-8" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-gray-400">{feature.description}</p>
+                  <h3 className="text-xl font-semibold mb-2 text-gray-900">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
                 </div>
               );
             })}
@@ -273,12 +271,12 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-red-600 to-red-700 text-white">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
             Ready to Find Your Perfect Device?
           </h2>
-          <p className="text-xl mb-8 text-red-100">
+          <p className="text-xl mb-8 text-gray-600">
             Visit our store or browse online to get started
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -286,14 +284,14 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
               onClick={() => onNavigate('contact')}
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-red-600 text-lg px-8 py-6"
+              className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white text-lg px-8 py-6"
             >
               Contact Us
             </Button>
             <Button
               onClick={() => onNavigate('all-products')}
               size="lg"
-              className="bg-white text-red-600 hover:bg-gray-100 text-lg px-8 py-6"
+              className="bg-red-600 text-white hover:bg-red-700 text-lg px-8 py-6"
             >
               Start Shopping
               <ArrowRight className="ml-2 w-5 h-5" />

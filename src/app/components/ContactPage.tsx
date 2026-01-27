@@ -125,7 +125,7 @@ export function ContactPage() {
                       <Input
                         id="contact-name"
                         type="text"
-                        placeholder="John Doe"
+                        placeholder=""
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
@@ -137,7 +137,7 @@ export function ContactPage() {
                       <Input
                         id="contact-email"
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder=""
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         required
@@ -150,7 +150,7 @@ export function ContactPage() {
                     <Input
                       id="contact-phone"
                       type="tel"
-                      placeholder="+91 98765 43210"
+                      placeholder=""
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       required
