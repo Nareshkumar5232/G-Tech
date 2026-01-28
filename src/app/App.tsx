@@ -85,6 +85,8 @@ export default function App() {
           currentPage={currentPage} 
           onNavigate={handleNavigate} 
           onWidthChange={setSidebarWidth}
+          isMobileOpen={isMobileMenuOpen}
+          onMobileClose={() => setIsMobileMenuOpen(false)}
           key={forceUpdate} 
         />
       )}
@@ -95,7 +97,14 @@ export default function App() {
           marginLeft: showSidebarFooter ? `${sidebarWidth}px` : '0',
         }}
       >
-        {showSidebarFooter && <TopBar currentPage={currentPage} onNavigate={handleNavigate} key={forceUpdate} />}
+        <style>{`
+          @media (max-width: 1023px) {
+            .flex.flex-col.min-h-screen {
+              margin-left: 0 !important;
+            }
+          }
+        `}</style>
+        {showSidebarFooter && <TopBar currentPage={currentPage} onNavigate={handleNavigate} onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} key={forceUpdate} />}
         
         <main className="flex-1">
         {/* Home Page */}

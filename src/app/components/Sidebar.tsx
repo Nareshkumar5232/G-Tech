@@ -23,13 +23,14 @@ interface SidebarProps {
   currentPage: string;
   onNavigate: (page: string) => void;
   onWidthChange?: (width: number) => void;
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-export function Sidebar({ currentPage, onNavigate, onWidthChange }: SidebarProps) {
+export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen = false, onMobileClose }: SidebarProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const [isResizing, setIsResizing] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [user, setUser] = useState<UserType | null>(null);
 
   useEffect(() => {
@@ -90,19 +91,11 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange }: SidebarProps
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-gray-900/90 backdrop-blur-lg text-white p-3 rounded-xl shadow-xl hover:bg-gray-800 transition-all duration-200 ease-in-out hover:scale-105"
-      >
-        {isMobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-      </button>
-
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 ease-in-out"
-          onClick={() => setIsMobileOpen(false)}
+          onClick={onMobileClose}
         />
       )}
 
@@ -148,7 +141,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange }: SidebarProps
                   key={item.page}
                   onClick={() => {
                     onNavigate(item.page);
-                    setIsMobileOpen(false);
+                    onMobileClose?.();
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ease-in-out group relative ${
                     isActive
@@ -183,7 +176,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange }: SidebarProps
                 <button
                   onClick={() => {
                     onNavigate('my-orders');
-                    setIsMobileOpen(false);
+                    onMobileClose?.();
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all duration-200 ease-in-out ${
                     currentPage === 'my-orders'
@@ -217,7 +210,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange }: SidebarProps
                 <Button
                   onClick={() => {
                     onNavigate('login');
-                    setIsMobileOpen(false);
+                    onMobileClose?.();
                   }}
                   variant="outline"
                   className={`w-full border-gray-700 hover:bg-gray-800/50 hover:border-gray-600 mb-2 transition-all duration-200 ease-in-out text-sm ${
@@ -230,7 +223,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange }: SidebarProps
                   <Button
                     onClick={() => {
                       onNavigate('register');
-                      setIsMobileOpen(false);
+                      onMobileClose?.();
                     }}
                     className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:shadow-lg hover:shadow-red-600/30 transition-all duration-200 ease-in-out text-sm"
                   >
