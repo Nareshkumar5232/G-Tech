@@ -106,11 +106,11 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
         <div className="flex items-center justify-between text-sm text-gray-600 mb-3 pb-3 border-b">
           <div className="flex items-center gap-1">
             <MapPin className="w-4 h-4" />
-            <span>{product.location}</span>
+            <span className="truncate">{product.location}</span>
           </div>
           <div className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
-            <span>{getTimeAgo(product.createdAt)}</span>
+            <span className="whitespace-nowrap">{getTimeAgo(product.createdAt)}</span>
           </div>
         </div>
 
@@ -126,8 +126,8 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
               key={index}
               className="text-xs text-gray-500 flex items-center gap-2"
             >
-              <span className="w-1 h-1 bg-red-600 rounded-full" />
-              {spec}
+              <span className="w-1 h-1 bg-red-600 rounded-full flex-shrink-0" />
+              <span className="line-clamp-1">{spec}</span>
             </div>
           ))}
           {product.specs.length > 3 && (
@@ -141,10 +141,10 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
       <CardFooter className="p-4 pt-0">
         <Button
           onClick={() => onOrderClick(product)}
-          className="w-full bg-red-600 hover:bg-red-700 text-white group/btn"
+          className="w-full bg-red-600 hover:bg-red-700 text-white group/btn text-base"
         >
           <ShoppingCart className="w-4 h-4 mr-2 group-hover/btn:animate-bounce" />
-          Order / Enquire Now
+          <span>Order / Enquire Now</span>
         </Button>
       </CardFooter>
     </Card>

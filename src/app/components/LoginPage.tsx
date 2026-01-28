@@ -5,7 +5,9 @@ import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Alert, AlertDescription } from '@/app/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/app/components/ui/dialog';
 import { login } from '@/lib/store';
+import { toast } from 'sonner';
 
 interface LoginPageProps {
   onNavigate: (page: string) => void;
@@ -17,6 +19,9 @@ export function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +46,26 @@ export function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps) {
     }
 
     setLoading(false);
+  };
+
+  const handleForgotPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+
+    // Validate email
+    if (!resetEmail) {
+      toast.error('Please enter your email address');
+      setResetLoading(false);
+      return;
+    }
+
+    // Simulate sending reset email
+    setTimeout(() => {
+      toast.success('Password reset link sent to your email!');
+      setResetLoading(false);
+      setForgotPasswordOpen(false);
+      setResetEmail('');
+    }, 1000);
   };
 
   return (
@@ -96,7 +121,16 @@ export function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <button
+                  type="button"
+                  onClick={() => setForgotPasswordOpen(true)}
+                  className="text-xs text-red-600 hover:underline font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
@@ -134,6 +168,53 @@ export function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps) {
           </CardFooter>
         </form>
       </Card>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+            <DialogDescription>
+              Enter your email address and we'll send you a link to reset your password.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleForgotPassword}>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="pl-10"
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setForgotPasswordOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="bg-red-600 hover:bg-red-700"
+                disabled={resetLoading}
+              >
+                {resetLoading ? 'Sending...' : 'Send Reset Link'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       </div>
     </div>
   );

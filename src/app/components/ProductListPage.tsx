@@ -224,8 +224,8 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-red-700 to-red-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+        <div className="container mx-auto px-6">
+          <h1 className="text-4xl font-bold mb-2">
             {selectedCategory === 'all' ? 'All Products' : selectedCategory}
           </h1>
           <p className="text-gray-100 text-lg">
@@ -237,17 +237,17 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
       <div className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
           {/* Desktop Sidebar */}
-          <aside className="hidden lg:block w-72 flex-shrink-0">
+          <aside className="w-72 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
               <FilterSidebar />
             </div>
           </aside>
 
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {/* Top Bar */}
             <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex gap-4">
                 {/* Search */}
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -262,7 +262,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
 
                 {/* Sort */}
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-full md:w-48">
+                  <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -271,30 +271,12 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
                     <SelectItem value="price-high">Price: High to Low</SelectItem>
                   </SelectContent>
                 </Select>
-
-                {/* Mobile Filter Button */}
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" className="lg:hidden">
-                      <SlidersHorizontal className="w-4 h-4 mr-2" />
-                      Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="w-80 overflow-y-auto">
-                    <SheetHeader>
-                      <SheetTitle>Filters</SheetTitle>
-                    </SheetHeader>
-                    <div className="mt-6">
-                      <FilterSidebar />
-                    </div>
-                  </SheetContent>
-                </Sheet>
               </div>
             </div>
 
             {/* Results Count */}
             <div className="mb-6">
-              <p className="text-gray-700 font-medium">
+              <p className="text-base text-gray-700 font-medium">
                 Showing <span className="text-red-600 font-bold">{filteredAndSortedProducts.length}</span> product
                 {filteredAndSortedProducts.length !== 1 ? 's' : ''}
               </p>
@@ -302,7 +284,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
 
             {/* Product Grid */}
             {filteredAndSortedProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-3 gap-6">
                 {filteredAndSortedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} onOrderClick={onOrderClick} />
                 ))}
@@ -311,7 +293,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
               <div className="text-center py-16 bg-white rounded-lg shadow-md">
                 <div className="text-gray-400 text-6xl mb-4">🔍</div>
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">No products found</h3>
-                <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
+                <p className="text-base text-gray-500 mb-4">Try adjusting your search or filters</p>
                 <Button
                   onClick={clearFilters}
                   variant="outline"

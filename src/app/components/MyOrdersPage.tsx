@@ -144,7 +144,7 @@ export function MyOrdersPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-900 to-black text-white py-12">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">My Orders</h1>
+          <h1 className="text-4xl font-bold mb-2">My Orders</h1>
           <p className="text-gray-300 text-lg">Track and manage your orders</p>
         </div>
       </div>
@@ -171,7 +171,7 @@ export function MyOrdersPage() {
             {orders.map((order) => (
               <Card key={order.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex items-center justify-between gap-3">
                     <div>
                       <CardTitle className="text-lg mb-1">Order #{order.id}</CardTitle>
                       <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -185,9 +185,9 @@ export function MyOrdersPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     {/* Product Info */}
-                    <div className="md:col-span-2">
+                    <div className="col-span-2">
                       <h4 className="font-semibold mb-1">{order.productName}</h4>
                       <div className="text-sm text-gray-600 space-y-1">
                         <p>Quantity: {order.quantity}</p>
@@ -196,7 +196,7 @@ export function MyOrdersPage() {
                     </div>
 
                     {/* Total Amount */}
-                    <div className="flex flex-col md:items-end justify-center">
+                    <div className="flex flex-col items-end justify-center">
                       <p className="text-sm text-gray-500 mb-1">Total Amount</p>
                       <div className="flex items-baseline gap-1">
                         <IndianRupee className="w-5 h-5 text-red-600" />
