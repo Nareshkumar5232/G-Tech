@@ -83,7 +83,7 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
                 <ShoppingBag className="w-5 h-5 text-gray-300" />
                 <span className="text-sm font-medium text-gray-200">Orders</span>
               </button>
-              
+
               <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 bg-gray-800/50 rounded-xl border border-gray-700/50 hover:border-gray-600 transition-all duration-200 ease-in-out">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-sm">
                   <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -98,9 +98,8 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => onNavigate('login')}
-                variant="outline"
                 size="sm"
-                className="rounded-xl border-gray-700 text-gray-300 hover:border-gray-600 hover:bg-gray-800 hover:text-gray-300 transition-all duration-200 ease-in-out"
+                className="rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all duration-200 ease-in-out"
               >
                 Login
               </Button>

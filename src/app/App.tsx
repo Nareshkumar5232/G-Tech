@@ -33,6 +33,7 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [forceUpdate, setForceUpdate] = useState(0);
   const [sidebarWidth, setSidebarWidth] = useState(280);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Handle navigation
   const handleNavigate = (page: string) => {
@@ -43,7 +44,7 @@ export default function App() {
   // Handle order button click
   const handleOrderClick = (product: Product) => {
     const user = getCurrentUser();
-    
+
     if (!user) {
       toast.error('Please login to place an order');
       setCurrentPage('login');
@@ -57,15 +58,15 @@ export default function App() {
   // Handle order confirmation
   const handleOrderConfirm = (quantity: number, address: Address) => {
     const user = getCurrentUser();
-    
+
     if (!user || !selectedProduct) return;
 
     createOrder(user, selectedProduct, quantity, address);
-    
+
     toast.success('Order placed successfully! Check "My Orders" for details.');
     setOrderDialogOpen(false);
     setSelectedProduct(null);
-    
+
     // Force re-render to update pending orders count
     setForceUpdate(prev => prev + 1);
   };
@@ -81,17 +82,17 @@ export default function App() {
   return (
     <div className="min-h-screen m-0 p-0 bg-gray-50">
       {showSidebarFooter && (
-        <Sidebar 
-          currentPage={currentPage} 
-          onNavigate={handleNavigate} 
+        <Sidebar
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
           onWidthChange={setSidebarWidth}
           isMobileOpen={isMobileMenuOpen}
           onMobileClose={() => setIsMobileMenuOpen(false)}
-          key={forceUpdate} 
+          key={forceUpdate}
         />
       )}
 
-      <div 
+      <div
         className="flex flex-col min-h-screen transition-all duration-300 ease-in-out"
         style={{
           marginLeft: showSidebarFooter ? `${sidebarWidth}px` : '0',
@@ -105,48 +106,48 @@ export default function App() {
           }
         `}</style>
         {showSidebarFooter && <TopBar currentPage={currentPage} onNavigate={handleNavigate} onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} key={forceUpdate} />}
-        
+
         <main className="flex-1">
-        {/* Home Page */}
-        {currentPage === 'home' && (
-          <HomePage onNavigate={handleNavigate} onOrderClick={handleOrderClick} />
-        )}
+          {/* Home Page */}
+          {currentPage === 'home' && (
+            <HomePage onNavigate={handleNavigate} onOrderClick={handleOrderClick} />
+          )}
 
-        {/* All Products Page */}
-        {currentPage === 'all-products' && (
-          <ProductListPage onOrderClick={handleOrderClick} />
-        )}
+          {/* All Products Page */}
+          {currentPage === 'all-products' && (
+            <ProductListPage onOrderClick={handleOrderClick} />
+          )}
 
-        {/* Product Category Pages */}
-        {currentPage === 'new-laptops' && (
-          <ProductListPage category="New Laptops" onOrderClick={handleOrderClick} />
-        )}
-        {currentPage === 'used-laptops' && (
-          <ProductListPage category="Used Laptops" onOrderClick={handleOrderClick} />
-        )}
-        {currentPage === 'accessories' && (
-          <ProductListPage category="Accessories" onOrderClick={handleOrderClick} />
-        )}
-        {currentPage === 'networking-cctv' && (
-          <ProductListPage category="Networking & CCTV" onOrderClick={handleOrderClick} />
-        )}
+          {/* Product Category Pages */}
+          {currentPage === 'new-laptops' && (
+            <ProductListPage category="New Laptops" onOrderClick={handleOrderClick} />
+          )}
+          {currentPage === 'used-laptops' && (
+            <ProductListPage category="Used Laptops" onOrderClick={handleOrderClick} />
+          )}
+          {currentPage === 'accessories' && (
+            <ProductListPage category="Accessories" onOrderClick={handleOrderClick} />
+          )}
+          {currentPage === 'networking-cctv' && (
+            <ProductListPage category="Networking & CCTV" onOrderClick={handleOrderClick} />
+          )}
 
-        {/* Contact Page */}
-        {currentPage === 'contact' && <ContactPage />}
+          {/* Contact Page */}
+          {currentPage === 'contact' && <ContactPage />}
 
-        {/* Auth Pages */}
-        {currentPage === 'login' && (
-          <LoginPage onNavigate={handleNavigate} onLoginSuccess={handleAuthSuccess} />
-        )}
-        {currentPage === 'register' && (
-          <RegisterPage onNavigate={handleNavigate} onRegisterSuccess={handleAuthSuccess} />
-        )}
+          {/* Auth Pages */}
+          {currentPage === 'login' && (
+            <LoginPage onNavigate={handleNavigate} onLoginSuccess={handleAuthSuccess} />
+          )}
+          {currentPage === 'register' && (
+            <RegisterPage onNavigate={handleNavigate} onRegisterSuccess={handleAuthSuccess} />
+          )}
 
-        {/* User Pages */}
-        {currentPage === 'my-orders' && <MyOrdersPage />}
-      </main>
+          {/* User Pages */}
+          {currentPage === 'my-orders' && <MyOrdersPage />}
+        </main>
 
-      {showSidebarFooter && <Footer />}
+        {showSidebarFooter && <Footer />}
       </div>
 
       {/* WhatsApp Floating Button */}

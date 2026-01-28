@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { 
-  Home, 
-  Package, 
-  Laptop, 
-  HardDrive, 
-  Headphones, 
-  Wifi, 
-  Mail, 
+import {
+  Home,
+  Package,
+  Laptop,
+  HardDrive,
+  Headphones,
+  Wifi,
+  Mail,
   ShoppingBag,
   User,
   LogOut,
@@ -101,9 +101,8 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-gradient-to-b from-gray-900 to-black text-white shadow-[4px_0_24px_rgba(0,0,0,0.12)] transition-all duration-300 ease-in-out z-40 overflow-visible ${
-          isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed top-0 left-0 h-screen bg-gradient-to-b from-gray-900 to-black text-white shadow-[4px_0_24px_rgba(0,0,0,0.12)] transition-all duration-300 ease-in-out z-40 overflow-visible ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          }`}
         style={{ width: `${currentWidth}px` }}
       >
         <div className="h-full flex flex-col relative backdrop-blur-sm overflow-visible">
@@ -132,40 +131,38 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-6 px-3 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
             <div className="space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = currentPage === item.page;
-              
-              return (
-                <button
-                  key={item.page}
-                  onClick={() => {
-                    onNavigate(item.page);
-                    onMobileClose?.();
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ease-in-out group relative ${
-                    isActive
-                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/30 scale-[1.02]'
-                      : 'text-gray-400 hover:bg-gray-800/50 hover:text-white hover:scale-[1.01]'
-                  }`}
-                  title={!isExpanded ? item.label : ''}
-                >
-                  <div className={`flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-in-out ${
-                    isActive ? 'scale-110' : 'group-hover:scale-105'
-                  }`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  {isExpanded && (
-                    <span className="font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis">
-                      {item.label}
-                    </span>
-                  )}
-                  {isActive && !isExpanded && (
-                    <div className="absolute left-0 w-1 h-8 bg-red-600 rounded-r shadow-lg shadow-red-600/50" />
-                  )}
-                </button>
-              );
-            })}
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentPage === item.page;
+
+                return (
+                  <button
+                    key={item.page}
+                    onClick={() => {
+                      onNavigate(item.page);
+                      onMobileClose?.();
+                    }}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ease-in-out group relative ${isActive
+                        ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/30 scale-[1.02]'
+                        : 'text-gray-400 hover:bg-gray-800/50 hover:text-white hover:scale-[1.01]'
+                      }`}
+                    title={!isExpanded ? item.label : ''}
+                  >
+                    <div className={`flex items-center justify-center flex-shrink-0 transition-transform duration-200 ease-in-out ${isActive ? 'scale-110' : 'group-hover:scale-105'
+                      }`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    {isExpanded && (
+                      <span className="font-medium text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+                        {item.label}
+                      </span>
+                    )}
+                    {isActive && !isExpanded && (
+                      <div className="absolute left-0 w-1 h-8 bg-red-600 rounded-r shadow-lg shadow-red-600/50" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </nav>
 
@@ -178,24 +175,23 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                     onNavigate('my-orders');
                     onMobileClose?.();
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all duration-200 ease-in-out ${
-                    currentPage === 'my-orders'
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all duration-200 ease-in-out ${currentPage === 'my-orders'
                       ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/30'
                       : 'text-gray-400 hover:bg-gray-800/50 hover:text-white hover:scale-[1.01]'
-                  }`}
+                    }`}
                   title={!isExpanded ? 'My Orders' : ''}
                 >
                   <ShoppingBag className="w-5 h-5 flex-shrink-0" />
                   {isExpanded && <span className="font-medium text-sm">My Orders</span>}
                 </button>
-                
+
                 {isExpanded && (
                   <div className="flex items-center gap-2.5 px-3 py-2.5 bg-gray-800/50 rounded-xl mb-2 backdrop-blur-sm">
                     <User className="w-4 h-4 flex-shrink-0" />
                     <span className="text-sm truncate">{user.name}</span>
                   </div>
                 )}
-                
+
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:bg-gray-800/50 hover:text-white transition-all duration-200 ease-in-out hover:scale-[1.01]"
@@ -212,10 +208,8 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                     onNavigate('login');
                     onMobileClose?.();
                   }}
-                  variant="outline"
-                  className={`w-full border-gray-700 hover:bg-gray-800/50 hover:border-gray-600 mb-2 transition-all duration-200 ease-in-out text-sm ${
-                    !isExpanded ? 'px-0' : ''
-                  }`}
+                  className={`w-full bg-red-600 text-white hover:bg-red-700 mb-2 transition-all duration-200 ease-in-out text-sm ${!isExpanded ? 'px-0' : ''
+                    }`}
                 >
                   {isExpanded ? 'Login' : <User className="w-5 h-5" />}
                 </Button>
