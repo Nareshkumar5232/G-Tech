@@ -26,15 +26,15 @@ export function ContactPage() {
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-900 to-black text-white py-12">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-2">Contact Us</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Contact Us</h1>
           <p className="text-gray-300 text-lg">Get in touch with G-TECH INNOVATION</p>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Information */}
-          <div className="col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-6">
             {/* Address */}
             <Card>
               <CardHeader>
@@ -111,7 +111,7 @@ export function ContactPage() {
           </div>
 
           {/* Contact Form */}
-          <div className="col-span-2">
+          <div className="lg:col-span-2">
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">Send us a Message</CardTitle>
@@ -119,7 +119,7 @@ export function ContactPage() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="contact-name">Your Name</Label>
                       <Input

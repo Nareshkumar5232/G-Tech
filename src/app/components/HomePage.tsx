@@ -80,7 +80,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       {/* Quick Stats */}
       <section className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-6 py-6">
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {categories.map((category) => {
               const Icon = category.icon;
               return (
@@ -116,7 +116,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
               ✨ Your Trusted Tech Partner in Chennai
             </div>
             
-            <h1 className="text-4xl font-bold mb-4 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
               New & Used Laptops at
               <span className="text-red-600"> Best Prices</span>
             </h1>
@@ -125,7 +125,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
               Quality computers, accessories, networking & CCTV solutions for your home and business needs.
             </p>
             
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => onNavigate('all-products')}
                 size="lg"
@@ -154,7 +154,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
             <div className="inline-block px-6 py-2 bg-red-50 border border-red-200 rounded-full text-sm mb-3">
               💎 Premium Quality Accessories
             </div>
-            <h2 className="text-4xl font-bold mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
               Best Laptop Accessories at Affordable Prices
             </h2>
             <p className="text-lg text-gray-600 mb-4 max-w-2xl mx-auto">
@@ -163,7 +163,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
           </div>
 
           {/* Featured Accessories Grid */}
-          <div className="grid grid-cols-7 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-6">
             {featuredAccessories.map((accessory) => (
               <Card key={accessory.id} className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white">
                 <CardContent className="p-4">
@@ -223,11 +223,11 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold mb-3">Featured Products</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Featured Products</h2>
             <p className="text-gray-600 text-lg">Handpicked deals just for you</p>
           </div>
 
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -243,10 +243,10 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold mb-3">Why Choose G-TECH?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Why Choose G-TECH?</h2>
           </div>
 
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
@@ -266,13 +266,13 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       {/* CTA Section */}
       <section className="py-12 bg-white text-gray-900">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold mb-3">
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">
             Ready to Find Your Perfect Device?
           </h2>
           <p className="text-lg mb-6 text-gray-600">
             Visit our store or browse online to get started
           </p>
-          <div className="flex gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               onClick={() => onNavigate('contact')}
               size="lg"

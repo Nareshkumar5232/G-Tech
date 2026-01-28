@@ -33,7 +33,6 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [forceUpdate, setForceUpdate] = useState(0);
   const [sidebarWidth, setSidebarWidth] = useState(280);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Handle navigation
   const handleNavigate = (page: string) => {
@@ -86,8 +85,6 @@ export default function App() {
           currentPage={currentPage} 
           onNavigate={handleNavigate} 
           onWidthChange={setSidebarWidth}
-          isMobileOpen={isMobileMenuOpen}
-          onMobileClose={() => setIsMobileMenuOpen(false)}
           key={forceUpdate} 
         />
       )}
@@ -98,7 +95,7 @@ export default function App() {
           marginLeft: showSidebarFooter ? `${sidebarWidth}px` : '0',
         }}
       >
-        {showSidebarFooter && <TopBar currentPage={currentPage} onNavigate={handleNavigate} onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} key={forceUpdate} />}
+        {showSidebarFooter && <TopBar currentPage={currentPage} onNavigate={handleNavigate} key={forceUpdate} />}
         
         <main className="flex-1">
         {/* Home Page */}

@@ -270,7 +270,7 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
         {/* Address Step */}
         {step === 'address' && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <div className="relative">
@@ -335,8 +335,8 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2 col-span-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2 md:col-span-3">
                 <Label htmlFor="pincode">Pincode</Label>
                 <div className="relative">
                   <Input
@@ -385,7 +385,7 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
                 )}
               </div>
 
-              <div className="space-y-2 col-span-2">
+              <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="state">State</Label>
                 <Input
                   id="state"
@@ -442,7 +442,7 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
             {/* Payment Method Selection */}
             <div className="border rounded-lg p-4">
               <h4 className="font-semibold mb-3">Payment Method</h4>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('cod')}

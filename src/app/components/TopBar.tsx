@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Bell, User, ShoppingBag, Menu } from 'lucide-react';
+import { Search, Bell, User, ShoppingBag } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { getCurrentUser } from '@/lib/store';
@@ -8,10 +8,9 @@ import type { User as UserType } from '@/types';
 interface TopBarProps {
   currentPage: string;
   onNavigate: (page: string) => void;
-  onMobileMenuToggle?: () => void;
 }
 
-export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarProps) {
+export function TopBar({ currentPage, onNavigate }: TopBarProps) {
   const [user, setUser] = useState<UserType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -38,13 +37,13 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
     <header className="sticky top-0 z-30 bg-black/95 backdrop-blur-lg border-b border-gray-800/80 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
       <div className="flex items-center justify-between px-8 py-4">
         {/* Page Title */}
-        <div className="min-w-0 flex-shrink">
-          <h1 className="text-2xl font-semibold text-white tracking-tight truncate">{getPageTitle()}</h1>
+        <div className="min-w-[200px]">
+          <h1 className="text-2xl font-semibold text-white tracking-tight">{getPageTitle()}</h1>
           <p className="text-xs text-gray-400 mt-0.5">Welcome to G-TECH Innovation</p>
         </div>
 
         {/* Search Bar */}
-        <div className="flex flex-1 max-w-2xl mx-12">
+        <div className="hidden md:flex flex-1 max-w-2xl mx-12">
           <div className="relative w-full">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
@@ -58,7 +57,7 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2">
           {/* Notifications */}
           <button className="relative p-2.5 hover:bg-gray-800 rounded-xl transition-all duration-200 ease-in-out hover:scale-105">
             <Bell className="w-5 h-5 text-gray-300" />
@@ -70,7 +69,7 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
             <div className="flex items-center gap-2">
               <button
                 onClick={() => onNavigate('my-orders')}
-                className="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-800 rounded-xl transition-all duration-200 ease-in-out hover:scale-[1.02]"
+                className="hidden sm:flex items-center gap-2 px-4 py-2.5 hover:bg-gray-800 rounded-xl transition-all duration-200 ease-in-out hover:scale-[1.02]"
               >
                 <ShoppingBag className="w-5 h-5 text-gray-300" />
                 <span className="text-sm font-medium text-gray-200">Orders</span>
@@ -80,9 +79,9 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
                 <div className="w-9 h-9 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-sm">
                   <User className="w-5 h-5 text-white" />
                 </div>
-                <div className="text-left">
-                  <p className="text-sm font-medium text-white leading-tight truncate max-w-[120px]">{user.name}</p>
-                  <p className="text-xs text-gray-400 leading-tight truncate max-w-[120px]">{user.email}</p>
+                <div className="hidden sm:block text-left">
+                  <p className="text-sm font-medium text-white leading-tight">{user.name}</p>
+                  <p className="text-xs text-gray-400 leading-tight">{user.email}</p>
                 </div>
               </div>
             </div>
@@ -92,7 +91,7 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
                 onClick={() => onNavigate('login')}
                 variant="outline"
                 size="sm"
-                className="rounded-xl border-gray-700 bg-gray-800 text-white hover:border-gray-600 hover:bg-gray-700 hover:text-white transition-all duration-200 ease-in-out"
+                className="rounded-xl border-gray-700 text-gray-300 hover:border-gray-600 hover:bg-gray-800 hover:text-gray-300 transition-all duration-200 ease-in-out"
               >
                 Login
               </Button>
@@ -105,6 +104,20 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
               </Button>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Mobile Search */}
+      <div className="md:hidden px-6 pb-4">
+        <div className="relative w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-12 pr-4 py-2.5 w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 transition-all duration-200 ease-in-out"
+          />
         </div>
       </div>
     </header>
