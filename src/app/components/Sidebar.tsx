@@ -83,6 +83,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
     { label: 'Used Laptops', page: 'used-laptops', icon: HardDrive },
     { label: 'Accessories', page: 'accessories', icon: Headphones },
     { label: 'Networking & CCTV', page: 'networking-cctv', icon: Wifi },
+    { label: 'My Cart', page: 'cart', icon: ShoppingBag },
     { label: 'Contact', page: 'contact', icon: Mail },
   ];
 
@@ -112,17 +113,30 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
               onClick={() => onNavigate('home')}
               className="flex items-center gap-3 group w-full transition-transform duration-200 ease-in-out hover:scale-[1.02]"
             >
-              <div className="bg-gradient-to-br from-red-600 to-red-700 p-2.5 rounded-xl group-hover:shadow-lg group-hover:shadow-red-600/50 transition-all duration-200 ease-in-out flex-shrink-0">
-                <div className="w-8 h-8 flex items-center justify-center">
-                  <span className="text-2xl font-bold">G</span>
+              {isExpanded && (
+                <div className="bg-white p-2.5 rounded-xl group-hover:shadow-lg transition-all duration-200 ease-in-out flex-shrink-0">
+                  <img 
+                    src="/logo.png" 
+                    alt="Saturn Systems" 
+                    className="w-16 h-16"
+                    style={{ objectFit: 'contain' }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentElement;
+                      if (parent) {
+                        parent.innerHTML = '<div class="w-16 h-16 flex items-center justify-center text-blue-600 font-bold text-4xl">S</div>';
+                      }
+                    }}
+                  />
                 </div>
-              </div>
+              )}
               {isExpanded && (
                 <div className="text-left overflow-hidden">
                   <div className="text-base font-semibold tracking-tight whitespace-nowrap">
-                    G-TECH INNOVATION
+                    SATURN SYSTEMS
                   </div>
-                  <div className="text-[11px] text-gray-400 mt-0.5">Your Tech Partner</div>
+                  <div className="text-[11px] text-gray-400 mt-0.5">Laptops Sales & Services</div>
                 </div>
               )}
             </button>
@@ -143,7 +157,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                       onMobileClose?.();
                     }}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 ease-in-out group relative ${isActive
-                        ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/30 scale-[1.02]'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/30 scale-[1.02]'
                         : 'text-gray-400 hover:bg-gray-800/50 hover:text-white hover:scale-[1.01]'
                       }`}
                     title={!isExpanded ? item.label : ''}
@@ -158,7 +172,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                       </span>
                     )}
                     {isActive && !isExpanded && (
-                      <div className="absolute left-0 w-1 h-8 bg-red-600 rounded-r shadow-lg shadow-red-600/50" />
+                      <div className="absolute left-0 w-1 h-8 bg-blue-600 rounded-r shadow-lg shadow-blue-600/50" />
                     )}
                   </button>
                 );
@@ -176,7 +190,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                     onMobileClose?.();
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl mb-2 transition-all duration-200 ease-in-out ${currentPage === 'my-orders'
-                      ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-lg shadow-red-600/30'
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/30'
                       : 'text-gray-400 hover:bg-gray-800/50 hover:text-white hover:scale-[1.01]'
                     }`}
                   title={!isExpanded ? 'My Orders' : ''}
@@ -208,7 +222,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                     onNavigate('login');
                     onMobileClose?.();
                   }}
-                  className={`w-full bg-red-600 text-white hover:bg-red-700 mb-2 transition-all duration-200 ease-in-out text-sm ${!isExpanded ? 'px-0' : ''
+                  className={`w-full bg-blue-600 text-white hover:bg-blue-700 mb-2 transition-all duration-200 ease-in-out text-sm ${!isExpanded ? 'px-0' : ''
                     }`}
                 >
                   {isExpanded ? 'Login' : <User className="w-5 h-5" />}
@@ -219,7 +233,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                       onNavigate('register');
                       onMobileClose?.();
                     }}
-                    className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:shadow-lg hover:shadow-red-600/30 transition-all duration-200 ease-in-out text-sm"
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-200 ease-in-out text-sm"
                   >
                     Register
                   </Button>
@@ -231,7 +245,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
           {/* Collapse Toggle (Desktop) */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-red-600 to-red-700 text-white p-2 rounded-full shadow-xl hover:shadow-2xl hover:shadow-red-600/40 transition-all duration-200 ease-in-out hover:scale-110 z-50"
+            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-2 rounded-full shadow-xl hover:shadow-2xl hover:shadow-blue-600/40 transition-all duration-200 ease-in-out hover:scale-110 z-50"
           >
             {isExpanded ? (
               <ChevronLeft className="w-4 h-4" />
@@ -243,10 +257,10 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
           {/* Resize Handle (Desktop, when expanded) */}
           {isExpanded && (
             <div
-              className="hidden lg:block absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-red-600/50 transition-all duration-200 ease-in-out group"
+              className="hidden lg:block absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-600/50 transition-all duration-200 ease-in-out group"
               onMouseDown={() => setIsResizing(true)}
             >
-              <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-20 bg-gray-700/50 group-hover:bg-red-600 group-hover:h-24 rounded-l transition-all duration-200 ease-in-out" />
+              <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-20 bg-gray-700/50 group-hover:bg-blue-600 group-hover:h-24 rounded-l transition-all duration-200 ease-in-out" />
             </div>
           )}
         </div>

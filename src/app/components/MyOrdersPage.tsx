@@ -83,7 +83,7 @@ export function MyOrdersPage() {
       case 'Delivered':
         return 'bg-green-600';
       case 'Cancelled':
-        return 'bg-red-600';
+        return 'bg-blue-600';
       default:
         return 'bg-gray-600';
     }
@@ -142,7 +142,7 @@ export function MyOrdersPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-900 to-black text-white py-12">
+      <div className="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-12">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">My Orders</h1>
           <p className="text-gray-300 text-lg">Track and manage your orders</p>
@@ -199,7 +199,7 @@ export function MyOrdersPage() {
                     <div className="flex flex-col md:items-end justify-center">
                       <p className="text-sm text-gray-500 mb-1">Total Amount</p>
                       <div className="flex items-baseline gap-1">
-                        <IndianRupee className="w-5 h-5 text-red-600" />
+                        <IndianRupee className="w-5 h-5 text-blue-600" />
                         <span className="text-2xl font-bold text-gray-900">
                           {order.totalAmount.toLocaleString('en-IN')}
                         </span>
@@ -230,14 +230,14 @@ export function MyOrdersPage() {
                   {order.status !== 'Cancelled' && (
                     <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg">
                       <h4 className="font-semibold text-sm mb-4 flex items-center gap-2">
-                        <Truck className="w-4 h-4 text-red-600" />
+                        <Truck className="w-4 h-4 text-blue-600" />
                         Order Tracking
                       </h4>
                       <div className="relative">
                         {/* Progress Line */}
                         <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200" style={{ width: 'calc(100% - 40px)', marginLeft: '20px' }}>
                           <div 
-                            className="h-full bg-red-600 transition-all duration-500"
+                            className="h-full bg-blue-600 transition-all duration-500"
                             style={{ width: `${(getStatusIndex(order.status) / (getTrackingSteps().length - 1)) * 100}%` }}
                           />
                         </div>
@@ -380,7 +380,7 @@ export function MyOrdersPage() {
               className={error ? 'border-red-500' : ''}
             />
             {error && (
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-sm text-blue-600">{error}</p>
             )}
           </div>
 
@@ -393,7 +393,7 @@ export function MyOrdersPage() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancelConfirm}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-blue-600 hover:bg-blue-700"
             >
               Confirm Cancellation
             </AlertDialogAction>

@@ -87,19 +87,19 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                 <button
                   key={category.page}
                   onClick={() => onNavigate(category.page)}
-                  className="group relative overflow-hidden bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 text-left border border-gray-100 hover:border-red-200"
+                  className="group relative overflow-hidden bg-gradient-to-br from-white to-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 text-left border border-gray-100 hover:border-blue-200"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`p-3 rounded-lg bg-gradient-to-br ${category.gradient} text-white`}>
                       <Icon className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors">
+                      <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                         {category.title}
                       </h3>
                       <p className="text-xs text-gray-500">{category.description}</p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" />
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
                   </div>
                 </button>
               );
@@ -112,24 +112,24 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       <section className="bg-white text-gray-900 py-12">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl">
-            <div className="inline-block px-4 py-2 bg-red-600/10 border border-red-600 rounded-full text-sm mb-4 text-red-600">
-              ✨ Your Trusted Tech Partner in Chennai
+            <div className="inline-block px-4 py-2 bg-blue-600/10 border border-blue-600 rounded-full text-sm mb-4 text-blue-600">
+              ✨ Your Trusted Laptop Partner in Chennai
             </div>
             
             <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
               New & Used Laptops at
-              <span className="text-red-600"> Best Prices</span>
+              <span className="text-blue-600"> Best Prices</span>
             </h1>
             
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              Quality computers, accessories, networking & CCTV solutions for your home and business needs.
+              Sales & buyback, refurbished laptops, repair & services for your business needs.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => onNavigate('all-products')}
                 size="lg"
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 Browse All Products
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -151,7 +151,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-8">
-            <div className="inline-block px-6 py-2 bg-red-50 border border-red-200 rounded-full text-sm mb-3">
+            <div className="inline-block px-6 py-2 bg-blue-50 border border-blue-200 rounded-full text-sm mb-3">
               💎 Premium Quality Accessories
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-3">
@@ -183,8 +183,8 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                   
                   {/* Price */}
                   <div className="flex items-baseline gap-1 mb-3">
-                    <IndianRupee className="w-4 h-4 text-red-600 font-bold" />
-                    <span className="text-xl font-bold text-red-600">
+                    <IndianRupee className="w-4 h-4 text-blue-600 font-bold" />
+                    <span className="text-xl font-bold text-blue-600">
                       {accessory.price.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -192,7 +192,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                   {/* Buy Button */}
                   <Button
                     onClick={() => handleAccessoryBuy(accessory)}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white text-sm py-2"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2"
                     size="sm"
                   >
                     <ShoppingCart className="w-3 h-3 mr-1" />
@@ -208,7 +208,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
             <Button
               onClick={() => onNavigate('accessories')}
               size="lg"
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-blue-600 text-white hover:bg-blue-700"
             >
               View All Accessories
               <ArrowRight className="ml-2 w-5 h-5" />
@@ -251,7 +251,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
               const Icon = feature.icon;
               return (
                 <div key={index} className="text-center p-6 bg-gray-50 rounded-xl hover:shadow-md transition-shadow">
-                  <div className="inline-flex p-4 rounded-full bg-red-600 mb-4">
+                  <div className="inline-flex p-4 rounded-full bg-blue-600 mb-4">
                     <Icon className="w-8 h-8 text-white" />
                   </div>
                   <h3 className="text-xl font-semibold mb-2 text-gray-900">{feature.title}</h3>
@@ -284,7 +284,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
             <Button
               onClick={() => onNavigate('all-products')}
               size="lg"
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-blue-600 text-white hover:bg-blue-700"
             >
               Start Shopping
               <ArrowRight className="ml-2 w-5 h-5" />

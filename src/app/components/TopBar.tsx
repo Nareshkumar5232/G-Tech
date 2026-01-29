@@ -22,7 +22,7 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
 
   const getPageTitle = () => {
     const titles: Record<string, string> = {
-      'home': 'Dashboard',
+      'home': 'Our Services',
       'all-products': 'All Products',
       'new-laptops': 'New Laptops',
       'used-laptops': 'Used Laptops',
@@ -31,82 +31,83 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
       'contact': 'Contact Us',
       'my-orders': 'My Orders',
     };
-    return titles[currentPage] || 'G-TECH';
+    return titles[currentPage] || 'Saturn Systems';
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-black/95 backdrop-blur-lg border-b border-gray-800/80 shadow-[0_1px_3px_rgba(0,0,0,0.3)]">
-      <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+    <header className="sticky top-0 z-30 bg-gradient-to-r from-gray-900 via-black to-gray-900 backdrop-blur-xl border-b border-gray-700/50 shadow-2xl">
+      <div className="flex items-center justify-between px-6 lg:px-10 py-4 lg:py-5">
         {/* Mobile Menu Button */}
         <button
           onClick={onMobileMenuToggle}
-          className="lg:hidden mr-3 text-white p-2 hover:bg-gray-800 rounded-lg transition-all duration-200"
+          className="lg:hidden mr-4 text-white p-2.5 hover:bg-white/10 rounded-lg transition-all duration-200 hover:scale-105"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {/* Page Title */}
         <div className="min-w-0 flex-shrink">
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white tracking-tight truncate">{getPageTitle()}</h1>
-          <p className="hidden sm:block text-xs text-gray-400 mt-0.5">Welcome to G-TECH Innovation</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight truncate bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            {getPageTitle()}
+          </h1>
         </div>
 
         {/* Search Bar */}
-        <div className="hidden lg:flex flex-1 max-w-2xl mx-4 lg:mx-12">
+        <div className="hidden lg:flex flex-1 max-w-3xl mx-8 lg:mx-16">
           <div className="relative w-full">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search products, categories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-2.5 w-full bg-gray-800/50 border-gray-700 text-white placeholder:text-gray-400 rounded-xl hover:bg-gray-700/50 focus:bg-gray-800 transition-all duration-200 ease-in-out focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50"
+              className="pl-14 pr-6 py-3.5 w-full bg-white/5 border border-gray-600/50 text-white placeholder:text-gray-400 rounded-2xl hover:bg-white/10 focus:bg-white/10 transition-all duration-300 ease-in-out focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 shadow-inner"
             />
           </div>
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <div className="flex items-center gap-3 flex-shrink-0">
           {/* Notifications */}
-          <button className="relative p-2 sm:p-2.5 hover:bg-gray-800 rounded-xl transition-all duration-200 ease-in-out hover:scale-105">
-            <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" />
-            <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-2 h-2 bg-red-600 rounded-full shadow-lg shadow-red-600/50"></span>
+          <button className="relative p-3 hover:bg-white/10 rounded-xl transition-all duration-200 ease-in-out hover:scale-105 group">
+            <Bell className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
+            <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50 animate-pulse"></span>
           </button>
 
           {/* User Profile */}
           {user ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => onNavigate('my-orders')}
-                className="hidden sm:flex items-center gap-2 px-4 py-2.5 hover:bg-gray-800 rounded-xl transition-all duration-200 ease-in-out hover:scale-[1.02]"
+                className="hidden sm:flex items-center gap-2.5 px-5 py-3 hover:bg-white/10 rounded-xl transition-all duration-200 ease-in-out hover:scale-[1.02] group"
               >
-                <ShoppingBag className="w-5 h-5 text-gray-300" />
-                <span className="text-sm font-medium text-gray-200">Orders</span>
+                <ShoppingBag className="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" />
+                <span className="text-sm font-semibold text-gray-200 group-hover:text-white transition-colors">Orders</span>
               </button>
 
-              <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 bg-gray-800/50 rounded-xl border border-gray-700/50 hover:border-gray-600 transition-all duration-200 ease-in-out">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-sm">
-                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              <div className="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-br from-blue-600/20 to-blue-700/20 rounded-xl border border-blue-500/30 hover:border-blue-400/50 transition-all duration-200 ease-in-out shadow-lg hover:shadow-blue-500/20">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                  <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="hidden md:block text-left">
-                  <p className="text-sm font-medium text-white leading-tight truncate max-w-[120px]">{user.name}</p>
-                  <p className="text-xs text-gray-400 leading-tight truncate max-w-[120px]">{user.email}</p>
+                  <p className="text-sm font-semibold text-white leading-tight truncate max-w-[140px]">{user.name}</p>
+                  <p className="text-xs text-gray-300 leading-tight truncate max-w-[140px]">{user.email}</p>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Button
                 onClick={() => onNavigate('login')}
                 size="sm"
-                className="rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all duration-200 ease-in-out"
+                className="rounded-xl bg-white/10 text-white hover:bg-white/20 border border-white/20 hover:border-white/30 transition-all duration-200 ease-in-out px-6 py-2.5 font-semibold"
               >
                 Login
               </Button>
               <Button
                 onClick={() => onNavigate('register')}
                 size="sm"
-                className="bg-gradient-to-r from-red-600 to-red-700 hover:shadow-lg hover:shadow-red-600/30 rounded-xl transition-all duration-200 ease-in-out"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 shadow-lg hover:shadow-blue-600/40 rounded-xl transition-all duration-200 ease-in-out px-6 py-2.5 font-semibold"
               >
                 Register
               </Button>
@@ -116,15 +117,15 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
       </div>
 
       {/* Mobile Search */}
-      <div className="md:hidden px-6 pb-4">
+      <div className="md:hidden px-6 pb-5">
         <div className="relative w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
             type="text"
             placeholder="Search products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 pr-4 py-2.5 w-full bg-gray-50 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 transition-all duration-200 ease-in-out"
+            className="pl-14 pr-6 py-3.5 w-full bg-white/5 border border-gray-600/50 text-white placeholder:text-gray-400 rounded-2xl focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 transition-all duration-300 ease-in-out shadow-inner"
           />
         </div>
       </div>

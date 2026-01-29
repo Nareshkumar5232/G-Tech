@@ -82,7 +82,7 @@ export function RegisterPage({ onNavigate, onRegisterSuccess }: RegisterPageProp
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-red-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-blue-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Button
           variant="ghost"
@@ -96,15 +96,13 @@ export function RegisterPage({ onNavigate, onRegisterSuccess }: RegisterPageProp
         <Card className="w-full">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <div className="bg-red-600 p-3 rounded-lg">
-              <div className="w-10 h-10 flex items-center justify-center">
-                <span className="text-3xl font-bold text-white">G</span>
-              </div>
+            <div className="bg-white p-3 rounded-lg">
+              <img src="/logo.png" alt="Saturn Systems" className="w-20 h-20 object-contain" />
             </div>
           </div>
           <CardTitle className="text-2xl text-center">Create Account</CardTitle>
           <CardDescription className="text-center">
-            Join G-TECH INNOVATION to start shopping
+            Join Saturn Systems to start shopping
           </CardDescription>
         </CardHeader>
 
@@ -201,7 +199,7 @@ export function RegisterPage({ onNavigate, onRegisterSuccess }: RegisterPageProp
           <CardFooter className="flex flex-col gap-3">
             <Button
               type="submit"
-              className="w-full bg-red-600 hover:bg-red-700"
+              className="w-full bg-blue-600 hover:bg-blue-700"
               disabled={loading}
             >
               {loading ? 'Creating Account...' : 'Create Account'}
@@ -212,7 +210,7 @@ export function RegisterPage({ onNavigate, onRegisterSuccess }: RegisterPageProp
               <button
                 type="button"
                 onClick={() => onNavigate('login')}
-                className="text-red-600 hover:underline font-medium"
+                className="text-blue-600 hover:underline font-medium"
               >
                 Login here
               </button>

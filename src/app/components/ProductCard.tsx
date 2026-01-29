@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ShoppingCart, IndianRupee, Heart, MapPin, Calendar } from 'lucide-react';
+import { ShoppingCart, IndianRupee, MapPin, Calendar } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
-import { toggleWishlist, isInWishlist } from '@/lib/store';
+import { addToCart, isInCart } from '@/lib/store';
 import type { Product } from '@/types';
 
 interface ProductCardProps {
@@ -26,12 +26,12 @@ function getTimeAgo(dateString: string): string {
 
 export function ProductCard({ product, onOrderClick }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [wishlistActive, setWishlistActive] = useState(isInWishlist(product.id));
+  const [inCart, setInCart] = useState(isInCart(product.id));
 
-  const handleWishlistClick = (e: React.MouseEvent) => {
+  const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleWishlist(product.id);
-    setWishlistActive(isInWishlist(product.id));
+    addToCart(product.id);
+    setInCart(true);
   };
 
   return (
@@ -54,18 +54,6 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
         >
           {product.condition}
         </Badge>
-
-        {/* Wishlist Button */}
-        <button
-          onClick={handleWishlistClick}
-          className={`absolute top-3 right-3 p-2 rounded-full transition-all ${
-            wishlistActive
-              ? 'bg-red-600 text-white hover:bg-red-700'
-              : 'bg-white/90 text-gray-700 hover:bg-red-600 hover:text-white'
-          }`}
-        >
-          <Heart className={`w-5 h-5 ${wishlistActive ? 'fill-current' : ''}`} />
-        </button>
 
         {/* Image Navigation Dots */}
         {product.images.length > 1 && (
@@ -91,14 +79,14 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
       <CardContent className="p-4">
         {/* Price */}
         <div className="flex items-baseline gap-1 mb-3">
-          <IndianRupee className="w-6 h-6 text-red-600 font-bold" />
+          <IndianRupee className="w-6 h-6 text-blue-600 font-bold" />
           <span className="text-3xl font-bold text-gray-900">
             {product.price.toLocaleString('en-IN')}
           </span>
         </div>
 
         {/* Product Name */}
-        <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-red-600 transition-colors min-h-[3.5rem]">
+        <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors min-h-[3.5rem]">
           {product.name}
         </h3>
 
@@ -126,7 +114,7 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
               key={index}
               className="text-xs text-gray-500 flex items-center gap-2"
             >
-              <span className="w-1 h-1 bg-red-600 rounded-full" />
+              <span className="w-1 h-1 bg-blue-600 rounded-full" />
               {spec}
             </div>
           ))}
@@ -139,13 +127,26 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button
-          onClick={() => onOrderClick(product)}
-          className="w-full bg-red-600 hover:bg-red-700 text-white group/btn"
-        >
-          <ShoppingCart className="w-4 h-4 mr-2 group-hover/btn:animate-bounce" />
-          Order / Enquire Now
-        </Button>
+        <div className="flex gap-2 w-full">
+          <Button
+            onClick={handleAddToCart}
+            disabled={inCart}
+            className={`flex-1 ${
+              inCart
+                ? 'bg-green-600 hover:bg-green-700'
+                : 'bg-gray-700 hover:bg-gray-800'
+            } text-white`}
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            {inCart ? 'In Cart' : 'Add to Cart'}
+          </Button>
+          <Button
+            onClick={() => onOrderClick(product)}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Order / Enquire
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

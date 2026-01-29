@@ -1,7 +1,7 @@
 
-  # Full-Stack E-Commerce Website
+# Saturn Systems - Laptop Sales & Services
 
-  This is a code bundle for Full-Stack E-Commerce Website. The original project is available at https://www.figma.com/design/g0ZLniFwlOQWgCggQpBXAK/Full-Stack-E-Commerce-Website.
+Official website for Saturn Systems - your trusted partner for new & used laptops, refurbished computers, sales & buyback, and repair services in Chennai.
 
   ## Running the code
 

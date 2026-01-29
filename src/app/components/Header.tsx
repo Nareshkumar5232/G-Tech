@@ -43,14 +43,25 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
             onClick={() => onNavigate('home')}
             className="flex items-center gap-3 group"
           >
-            <div className="bg-red-600 p-2 rounded-lg group-hover:bg-red-700 transition-colors">
-              <div className="w-8 h-8 flex items-center justify-center">
-                <span className="text-2xl font-bold">G</span>
-              </div>
+            <div className="bg-white p-2 rounded-lg group-hover:shadow-lg transition-all flex-shrink-0">
+              <img 
+                src="/logo.png" 
+                alt="Saturn Systems" 
+                className="w-16 h-16" 
+                style={{ objectFit: 'contain' }}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = '<div class="w-8 h-8 flex items-center justify-center text-blue-600 font-bold text-2xl">S</div>';
+                  }
+                }}
+              />
             </div>
             <div className="text-left">
-              <div className="text-xl font-bold tracking-tight">G-TECH INNOVATION</div>
-              <div className="text-xs text-gray-400">Your Tech Partner</div>
+              <div className="text-xl font-bold tracking-tight">SATURN SYSTEMS</div>
+              <div className="text-xs text-gray-400">Laptops Sales & Services</div>
             </div>
           </button>
 
@@ -62,7 +73,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 onClick={() => onNavigate(item.page)}
                 className={`px-4 py-2 rounded-lg transition-all ${
                   currentPage === item.page
-                    ? 'bg-red-600 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                 }`}
               >
@@ -101,13 +112,13 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                 <Button
                   onClick={() => onNavigate('login')}
                   variant="outline"
-                  className="border-gray-600 hover:bg-gray-800"
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   Login
                 </Button>
                 <Button
                   onClick={() => onNavigate('register')}
-                  className="bg-red-600 hover:bg-red-700"
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   Register
                 </Button>
@@ -137,7 +148,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                   }}
                   className={`px-4 py-3 rounded-lg text-left transition-all ${
                     currentPage === item.page
-                      ? 'bg-red-600 text-white'
+                      ? 'bg-blue-600 text-white'
                       : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}
                 >
@@ -193,7 +204,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
                       onNavigate('register');
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full bg-red-600 hover:bg-red-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700"
                   >
                     Register
                   </Button>

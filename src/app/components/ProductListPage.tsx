@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
@@ -24,6 +24,14 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
   const [selectedConditions, setSelectedConditions] = useState<('New' | 'Used')[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<TamilNaduCity[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>(category || 'all');
+  const [selectedProcessors, setSelectedProcessors] = useState<string[]>([]);
+  
+  // Collapsible sections state
+  const [isCategoryOpen, setIsCategoryOpen] = useState(true);
+  const [isPriceOpen, setIsPriceOpen] = useState(true);
+  const [isBrandOpen, setIsBrandOpen] = useState(false);
+  const [isTypeOpen, setIsTypeOpen] = useState(false);
+  const [isProcessorOpen, setIsProcessorOpen] = useState(false);
 
   const allProducts = getProducts();
   const products = selectedCategory === 'all' ? allProducts : allProducts.filter(p => p.category === selectedCategory);
@@ -31,6 +39,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
   const brands: Brand[] = ['Dell', 'HP', 'Lenovo', 'Apple', 'ASUS', 'Acer', 'MSI', 'Samsung', 'Other'];
   const locations: TamilNaduCity[] = ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem', 'Tirunelveli', 'Vellore', 'Erode', 'Thanjavur', 'Dindigul'];
   const categories: (ProductCategory | 'all')[] = ['all', 'New Laptops', 'Used Laptops', 'Accessories', 'Networking & CCTV'];
+  const processors: string[] = ['Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'Intel Core i9', 'AMD Ryzen 3', 'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9', 'Dual Core', 'Quad Core'];
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = [...products];
@@ -98,112 +107,189 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
     );
   };
 
+  const toggleProcessor = (processor: string) => {
+    setSelectedProcessors(prev =>
+      prev.includes(processor) ? prev.filter(p => p !== processor) : [...prev, processor]
+    );
+  };
+
   const clearFilters = () => {
     setSearchQuery('');
     setPriceRange([0, 200000]);
     setSelectedBrands([]);
     setSelectedConditions([]);
     setSelectedLocations([]);
+    setSelectedProcessors([]);
   };
 
-  const activeFiltersCount = selectedBrands.length + selectedConditions.length + selectedLocations.length;
+  const activeFiltersCount = selectedBrands.length + selectedConditions.length + selectedLocations.length + selectedProcessors.length;
 
   const FilterSidebar = () => (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Categories */}
-      <div>
-        <h3 className="font-semibold text-lg mb-3 text-gray-900">Categories</h3>
-        <div className="space-y-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
-                selectedCategory === cat
-                  ? 'bg-red-600 text-white font-medium'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {cat === 'all' ? 'All Categories' : cat}
-            </button>
-          ))}
-        </div>
+      <div className="border-b border-gray-200 pb-4">
+        <button
+          onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+          className="flex items-center justify-between w-full mb-3"
+        >
+          <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-900">CATEGORIES</h3>
+          {isCategoryOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+        {isCategoryOpen && (
+          <div className="space-y-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`flex items-center w-full text-left text-sm py-1 transition-colors ${
+                  selectedCategory === cat
+                    ? 'text-blue-600 font-medium'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <span className="mr-2">›</span>
+                {cat === 'all' ? 'All Categories' : cat}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Price Range */}
-      <div>
-        <h3 className="font-semibold text-lg mb-3 text-gray-900">Price Range</h3>
-        <div className="px-2">
-          <Slider
-            value={priceRange}
-            onValueChange={(value) => setPriceRange(value as [number, number])}
-            min={0}
-            max={200000}
-            step={5000}
-            className="mb-4"
-          />
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>₹{priceRange[0].toLocaleString('en-IN')}</span>
-            <span>₹{priceRange[1].toLocaleString('en-IN')}</span>
+      <div className="border-b border-gray-200 pb-4">
+        <button
+          onClick={() => setIsPriceOpen(!isPriceOpen)}
+          className="flex items-center justify-between w-full mb-3"
+        >
+          <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-900">PRICE</h3>
+          {isPriceOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+        {isPriceOpen && (
+          <div className="space-y-4">
+            <Slider
+              value={priceRange}
+              onValueChange={(value) => setPriceRange(value as [number, number])}
+              min={0}
+              max={200000}
+              step={5000}
+              className="mb-2"
+            />
+            <div className="flex items-center gap-2">
+              <Select 
+                value={priceRange[0].toString()} 
+                onValueChange={(value) => setPriceRange([parseInt(value), priceRange[1]])}
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Min" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">₹0</SelectItem>
+                  <SelectItem value="10000">₹10,000</SelectItem>
+                  <SelectItem value="25000">₹25,000</SelectItem>
+                  <SelectItem value="50000">₹50,000</SelectItem>
+                  <SelectItem value="75000">₹75,000</SelectItem>
+                </SelectContent>
+              </Select>
+              <span className="text-gray-500">to</span>
+              <Select 
+                value={priceRange[1].toString()} 
+                onValueChange={(value) => setPriceRange([priceRange[0], parseInt(value)])}
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Max" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="25000">₹25,000</SelectItem>
+                  <SelectItem value="50000">₹50,000</SelectItem>
+                  <SelectItem value="75000">₹75,000</SelectItem>
+                  <SelectItem value="100000">₹1,00,000</SelectItem>
+                  <SelectItem value="200000">₹2,00,000+</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Brand Filter */}
-      <div>
-        <h3 className="font-semibold text-lg mb-3 text-gray-900">Brand</h3>
-        <div className="space-y-2 max-h-48 overflow-y-auto">
-          {brands.map((brand) => (
-            <div key={brand} className="flex items-center space-x-2">
-              <Checkbox
-                id={`brand-${brand}`}
-                checked={selectedBrands.includes(brand)}
-                onCheckedChange={() => toggleBrand(brand)}
-              />
-              <Label htmlFor={`brand-${brand}`} className="text-sm cursor-pointer">
-                {brand}
-              </Label>
-            </div>
-          ))}
-        </div>
+      <div className="border-b border-gray-200 pb-4">
+        <button
+          onClick={() => setIsBrandOpen(!isBrandOpen)}
+          className="flex items-center justify-between w-full mb-3"
+        >
+          <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-900">BRAND</h3>
+          {isBrandOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+        {isBrandOpen && (
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {brands.map((brand) => (
+              <div key={brand} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`brand-${brand}`}
+                  checked={selectedBrands.includes(brand)}
+                  onCheckedChange={() => toggleBrand(brand)}
+                />
+                <Label htmlFor={`brand-${brand}`} className="text-sm cursor-pointer text-gray-700">
+                  {brand}
+                </Label>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Condition Filter */}
-      <div>
-        <h3 className="font-semibold text-lg mb-3 text-gray-900">Condition</h3>
-        <div className="space-y-2">
-          {(['New', 'Used'] as const).map((condition) => (
-            <div key={condition} className="flex items-center space-x-2">
-              <Checkbox
-                id={`condition-${condition}`}
-                checked={selectedConditions.includes(condition)}
-                onCheckedChange={() => toggleCondition(condition)}
-              />
-              <Label htmlFor={`condition-${condition}`} className="text-sm cursor-pointer">
-                {condition}
-              </Label>
-            </div>
-          ))}
-        </div>
+      {/* Type (Condition) Filter */}
+      <div className="border-b border-gray-200 pb-4">
+        <button
+          onClick={() => setIsTypeOpen(!isTypeOpen)}
+          className="flex items-center justify-between w-full mb-3"
+        >
+          <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-900">TYPE</h3>
+          {isTypeOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+        {isTypeOpen && (
+          <div className="space-y-2">
+            {(['New', 'Used'] as const).map((condition) => (
+              <div key={condition} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`condition-${condition}`}
+                  checked={selectedConditions.includes(condition)}
+                  onCheckedChange={() => toggleCondition(condition)}
+                />
+                <Label htmlFor={`condition-${condition}`} className="text-sm cursor-pointer text-gray-700">
+                  {condition}
+                </Label>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Location Filter */}
-      <div>
-        <h3 className="font-semibold text-lg mb-3 text-gray-900">Location</h3>
-        <div className="space-y-2 max-h-48 overflow-y-auto">
-          {locations.map((location) => (
-            <div key={location} className="flex items-center space-x-2">
-              <Checkbox
-                id={`location-${location}`}
-                checked={selectedLocations.includes(location)}
-                onCheckedChange={() => toggleLocation(location)}
-              />
-              <Label htmlFor={`location-${location}`} className="text-sm cursor-pointer">
-                {location}
-              </Label>
-            </div>
-          ))}
-        </div>
+      {/* Processor Filter */}
+      <div className="border-b border-gray-200 pb-4">
+        <button
+          onClick={() => setIsProcessorOpen(!isProcessorOpen)}
+          className="flex items-center justify-between w-full mb-3"
+        >
+          <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-900">PROCESSOR</h3>
+          {isProcessorOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+        {isProcessorOpen && (
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {processors.map((processor) => (
+              <div key={processor} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`processor-${processor}`}
+                  checked={selectedProcessors.includes(processor)}
+                  onCheckedChange={() => toggleProcessor(processor)}
+                />
+                <Label htmlFor={`processor-${processor}`} className="text-sm cursor-pointer text-gray-700">
+                  {processor}
+                </Label>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Clear Filters */}
@@ -223,7 +309,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-red-700 to-red-900 text-white py-12">
+      <div className="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-12">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
             {selectedCategory === 'all' ? 'All Products' : selectedCategory}
@@ -236,66 +322,126 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
 
       <div className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
-          {/* Desktop Sidebar */}
-          <aside className="hidden lg:block w-72 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
-              <FilterSidebar />
-            </div>
-          </aside>
-
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="flex-1 w-full">
             {/* Top Bar */}
             <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                {/* Search */}
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
+              <div className="flex flex-col gap-4">
+                {/* Search and Sort Row */}
+                <div className="flex flex-col md:flex-row gap-4">
+                  {/* Search */}
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
+                  {/* Sort */}
+                  <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                    <SelectTrigger className="w-full md:w-48">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="date">Date Published</SelectItem>
+                      <SelectItem value="price-low">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high">Price: High to Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {/* Mobile Filter Button */}
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="outline">
+                        <SlidersHorizontal className="w-4 h-4 mr-2" />
+                        Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-80 overflow-y-auto">
+                      <SheetHeader>
+                        <SheetTitle>Filters</SheetTitle>
+                      </SheetHeader>
+                      <div className="mt-6">
+                        <FilterSidebar />
+                      </div>
+                    </SheetContent>
+                  </Sheet>
                 </div>
 
-                {/* Sort */}
-                <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="date">Date Published</SelectItem>
-                    <SelectItem value="price-low">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high">Price: High to Low</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Quick Filters Row */}
+                <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-200">
+                {/* Condition Filters */}
+                <button
+                  onClick={() => toggleCondition('New')}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    selectedConditions.includes('New')
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  New
+                </button>
+                <button
+                  onClick={() => toggleCondition('Used')}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    selectedConditions.includes('Used')
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Used
+                </button>
 
-                {/* Mobile Filter Button */}
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" className="lg:hidden">
-                      <SlidersHorizontal className="w-4 h-4 mr-2" />
-                      Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="left" className="w-80 overflow-y-auto">
-                    <SheetHeader>
-                      <SheetTitle>Filters</SheetTitle>
-                    </SheetHeader>
-                    <div className="mt-6">
-                      <FilterSidebar />
-                    </div>
-                  </SheetContent>
-                </Sheet>
+                {/* Popular Brand Filters */}
+                {['Dell', 'HP', 'Lenovo', 'Apple'].map((brand) => (
+                  <button
+                    key={brand}
+                    onClick={() => toggleBrand(brand as Brand)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedBrands.includes(brand as Brand)
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {brand}
+                  </button>
+                ))}
+
+                {/* Price Range Display */}
+                {(priceRange[0] > 0 || priceRange[1] < 200000) && (
+                  <div className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-2">
+                    ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
+                    <button
+                      onClick={() => setPriceRange([0, 200000])}
+                      className="hover:text-blue-900"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Clear All Filters */}
+                {activeFiltersCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-full text-sm font-medium flex items-center gap-1"
+                  >
+                    <X className="w-3 h-3" />
+                    Clear All
+                  </button>
+                )}
+              </div>
               </div>
             </div>
 
             {/* Results Count */}
             <div className="mb-6">
               <p className="text-gray-700 font-medium">
-                Showing <span className="text-red-600 font-bold">{filteredAndSortedProducts.length}</span> product
+                Showing <span className="text-blue-600 font-bold">{filteredAndSortedProducts.length}</span> product
                 {filteredAndSortedProducts.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -315,7 +461,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
                 <Button
                   onClick={clearFilters}
                   variant="outline"
-                  className="border-red-600 text-red-600 hover:bg-red-50"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
                 >
                   Clear Filters
                 </Button>

@@ -6,7 +6,8 @@ const STORAGE_KEYS = {
   PRODUCTS: 'gtech_products',
   ORDERS: 'gtech_orders',
   USERS: 'gtech_users',
-  WISHLIST: 'gtech_wishlist'
+  WISHLIST: 'gtech_wishlist',
+  CART: 'gtech_cart'
 };
 
 // Auth Functions
@@ -270,4 +271,43 @@ export const getWishlistProducts = (): Product[] => {
   const wishlist = getWishlist();
   const products = getProducts();
   return products.filter(p => wishlist.includes(p.id));
+};
+
+// Cart Functions
+export const getCart = (): string[] => {
+  const cartStr = localStorage.getItem(STORAGE_KEYS.CART);
+  return cartStr ? JSON.parse(cartStr) : [];
+};
+
+export const addToCart = (productId: string): void => {
+  const cart = getCart();
+  if (!cart.includes(productId)) {
+    cart.push(productId);
+    localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
+  }
+};
+
+export const removeFromCart = (productId: string): void => {
+  const cart = getCart();
+  const index = cart.indexOf(productId);
+  
+  if (index !== -1) {
+    cart.splice(index, 1);
+    localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
+  }
+};
+
+export const isInCart = (productId: string): boolean => {
+  const cart = getCart();
+  return cart.includes(productId);
+};
+
+export const getCartProducts = (): Product[] => {
+  const cart = getCart();
+  const products = getProducts();
+  return products.filter(p => cart.includes(p.id));
+};
+
+export const clearCart = (): void => {
+  localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify([]));
 };

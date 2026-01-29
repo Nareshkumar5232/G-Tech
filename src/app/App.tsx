@@ -10,6 +10,7 @@ import { LoginPage } from './components/LoginPage';
 import { RegisterPage } from './components/RegisterPage';
 import { ContactPage } from './components/ContactPage';
 import { MyOrdersPage } from './components/MyOrdersPage';
+import { CartPage } from './components/CartPage';
 import { OrderDialog } from './components/OrderDialog';
 import { getCurrentUser, createOrder } from '@/lib/store';
 import type { Product, Address } from '@/types';
@@ -25,7 +26,8 @@ type Page =
   | 'contact'
   | 'login'
   | 'register'
-  | 'my-orders';
+  | 'my-orders'
+  | 'cart';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -145,9 +147,12 @@ export default function App() {
 
           {/* User Pages */}
           {currentPage === 'my-orders' && <MyOrdersPage />}
+
+          {/* Cart Page */}
+          {currentPage === 'cart' && <CartPage onOrderClick={handleOrderClick} />}
         </main>
 
-        {showSidebarFooter && <Footer />}
+        {currentPage === 'home' && <Footer />}
       </div>
 
       {/* WhatsApp Floating Button */}
@@ -159,7 +164,7 @@ export default function App() {
         aria-label="Chat on WhatsApp"
       >
         <MessageCircle className="w-6 h-6" />
-        <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+        <span className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
       </a>
 
       {/* Order Dialog */}

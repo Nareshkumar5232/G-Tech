@@ -197,7 +197,7 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
                 </div>
                 <div className="text-right">
                   <div className="flex items-baseline gap-1">
-                    <IndianRupee className="w-5 h-5 text-red-600" />
+                    <IndianRupee className="w-5 h-5 text-blue-600" />
                     <span className="text-2xl font-bold">{product.price.toLocaleString('en-IN')}</span>
                   </div>
                   <p className="text-sm text-gray-500">per unit</p>
@@ -212,7 +212,7 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
                 <ul className="space-y-1">
                   {product.specs.map((spec, index) => (
                     <li key={index} className="text-sm text-gray-700 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 bg-red-600 rounded-full" />
+                      <span className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
                       {spec}
                     </li>
                   ))}
