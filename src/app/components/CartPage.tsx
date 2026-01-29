@@ -16,8 +16,8 @@ export function CartPage({ onOrderClick }: CartPageProps) {
     loadCart();
   }, []);
 
-  const loadCart = () => {
-    const products = getCartProducts();
+  const loadCart = async () => {
+    const products = await getCartProducts();
     setCartProducts(products);
   };
 

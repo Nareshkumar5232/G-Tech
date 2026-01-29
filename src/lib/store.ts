@@ -1,52 +1,70 @@
 import { User, Product, Order, Address, TrackingEvent } from '@/types';
-import { initialProducts } from './mockData';
+import axios from 'axios';
 
+const API_URL = 'http://localhost:5000/api';
 const STORAGE_KEYS = {
   USER: 'gtech_current_user',
-  PRODUCTS: 'gtech_products',
-  ORDERS: 'gtech_orders',
-  USERS: 'gtech_users',
-  WISHLIST: 'gtech_wishlist',
-  CART: 'gtech_cart'
+  TOKEN: 'gtech_token',
+  CART: 'gtech_cart',
+  WISHLIST: 'gtech_wishlist'
 };
 
-// Auth Functions
-export const login = (email: string, password: string): User | null => {
-  const users = getUsers();
-  const user = users.find(u => u.email === email);
-  
-  // For demo purposes, checking a simple password
-  // In production, this would verify hashed passwords
-  if (user && password === 'password123') {
-    setCurrentUser(user);
-    return user;
+// Helper to get auth header
+const getAuthHeader = () => {
+  const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// --- Auth Functions ---
+
+export const login = async (email: string, password: string): Promise<User | null> => {
+  try {
+    const res = await axios.post(`${API_URL}/auth/login`, { mail: email, password });
+    if (res.data.token && res.data.user) {
+      localStorage.setItem(STORAGE_KEYS.TOKEN, res.data.token);
+
+      const user: User = {
+        id: res.data.user.id || res.data.user._id,
+        email: res.data.user.email || res.data.user.mail,
+        name: res.data.user.name,
+        phone: res.data.user.mobileno || '',
+      };
+
+      setCurrentUser(user);
+      return user;
+    }
+  } catch (error) {
+    console.error("Login failed:", error);
   }
   return null;
 };
 
-export const register = (email: string, password: string, name: string, phone: string): User | null => {
-  const users = getUsers();
-  
-  // Check if user already exists
-  if (users.find(u => u.email === email)) {
-    return null;
+export const register = async (email: string, password: string, name: string, phone: string): Promise<User | null> => {
+  try {
+    const res = await axios.post(`${API_URL}/auth/register`, { mail: email, password, name, mobileno: phone });
+    // Updated authController returns token and user now
+    if (res.data.token && res.data.user) {
+      localStorage.setItem(STORAGE_KEYS.TOKEN, res.data.token);
+
+      const user: User = {
+        id: res.data.user.id || res.data.user._id,
+        email: res.data.user.email || res.data.user.mail,
+        name: res.data.user.name,
+        phone: phone,
+      };
+
+      setCurrentUser(user);
+      return user;
+    }
+  } catch (error) {
+    console.error("Registration failed:", error);
   }
-  
-  const newUser: User = {
-    id: `user-${Date.now()}`,
-    email,
-    name,
-    phone
-  };
-  
-  users.push(newUser);
-  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-  setCurrentUser(newUser);
-  return newUser;
+  return null;
 };
 
 export const logout = () => {
   localStorage.removeItem(STORAGE_KEYS.USER);
+  localStorage.removeItem(STORAGE_KEYS.TOKEN);
 };
 
 export const getCurrentUser = (): User | null => {
@@ -58,192 +76,132 @@ export const setCurrentUser = (user: User) => {
   localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
 };
 
-export const getUsers = (): User[] => {
-  const usersStr = localStorage.getItem(STORAGE_KEYS.USERS);
-  return usersStr ? JSON.parse(usersStr) : [];
-};
+// --- Product Functions ---
 
-// Product Functions
-export const getProducts = (): Product[] => {
-  const productsStr = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-  if (!productsStr) {
-    // Initialize with default products
-    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(initialProducts));
-    return initialProducts;
+export const getProducts = async (): Promise<Product[]> => {
+  try {
+    const res = await axios.get(`${API_URL}/product`);
+    console.log("API Response:", res.data); // Debug log
+
+    const data = res.data;
+    const items = Array.isArray(data) ? data : (data.products || []);
+
+    if (!items.length) {
+      console.warn("No products found in response");
+      return [];
+    }
+
+    return items.map((p: any) => ({
+      ...p,
+      id: p._id || p.id,
+      category: p.category || 'New Laptops',
+      condition: p.condition || 'New',
+      images: p.images || [],
+      brand: p.brand || 'Other',
+      location: p.location || 'Chennai', // Default location
+      createdAt: p.createdAt || new Date().toISOString(),
+      specs: p.specs || [],
+    }));
+  } catch (error) {
+    console.error("Fetch products failed:", error);
+    return [];
   }
-  return JSON.parse(productsStr);
 };
 
-export const getProductById = (id: string): Product | undefined => {
-  const products = getProducts();
-  return products.find(p => p.id === id);
+export const getProductById = async (id: string): Promise<Product | undefined> => {
+  try {
+    const res = await axios.get(`${API_URL}/product/${id}`);
+    const p = res.data.product;
+    if (!p) return undefined;
+    return {
+      ...p,
+      id: p._id,
+    };
+  } catch (error) {
+    console.error("Fetch product failed:", error);
+    return undefined;
+  }
 };
 
-export const getProductsByCategory = (category: string): Product[] => {
-  const products = getProducts();
-  return products.filter(p => p.category === category);
+// --- Order Functions ---
+
+export const getOrders = async (): Promise<Order[]> => {
+  try {
+    const res = await axios.get<any[]>(`${API_URL}/orders/myorders`, { headers: getAuthHeader() });
+
+    return res.data.map((o: any) => ({
+      id: o._id,
+      userId: o.user,
+      userName: '',
+      userEmail: '',
+      userPhone: '',
+      productId: o.items?.[0]?.product?._id || '',
+      productName: o.items?.[0]?.product?.name || 'Multiple Items',
+      productPrice: 0,
+      quantity: o.items?.[0]?.quantity || 0,
+      totalAmount: o.totalAmount,
+      status: o.status,
+      address: {
+        fullName: 'Unknown',
+        phoneNumber: '',
+        addressLine1: o.address,
+        city: '', state: '', pincode: ''
+      },
+      trackingHistory: [],
+      createdAt: o.createdAt,
+      updatedAt: o.updatedAt || o.createdAt
+    }));
+  } catch (error) {
+    console.error("Fetch orders failed:", error);
+    return [];
+  }
 };
 
-export const getFeaturedProducts = (): Product[] => {
-  const products = getProducts();
-  return products.filter(p => p.featured);
-};
-
-export const addProduct = (product: Omit<Product, 'id'>): Product => {
-  const products = getProducts();
-  const newProduct: Product = {
-    ...product,
-    id: `product-${Date.now()}`
-  };
-  products.push(newProduct);
-  localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-  return newProduct;
-};
-
-export const updateProduct = (id: string, updates: Partial<Product>): Product | null => {
-  const products = getProducts();
-  const index = products.findIndex(p => p.id === id);
-  
-  if (index === -1) return null;
-  
-  products[index] = { ...products[index], ...updates };
-  localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-  return products[index];
-};
-
-export const deleteProduct = (id: string): boolean => {
-  const products = getProducts();
-  const filtered = products.filter(p => p.id !== id);
-  
-  if (filtered.length === products.length) return false;
-  
-  localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(filtered));
-  return true;
-};
-
-// Order Functions
-export const getOrders = (): Order[] => {
-  const ordersStr = localStorage.getItem(STORAGE_KEYS.ORDERS);
-  return ordersStr ? JSON.parse(ordersStr) : [];
-};
-
-export const getOrdersByUserId = (userId: string): Order[] => {
-  const orders = getOrders();
-  return orders.filter(o => o.userId === userId);
-};
-
-export const createOrder = (
+export const createOrder = async (
   user: User,
   product: Product,
   quantity: number,
   address: Address
-): Order => {
-  const orders = getOrders();
-  const now = new Date();
-  const estimatedDelivery = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-  
-  const initialTracking: TrackingEvent = {
-    status: 'Pending',
-    message: 'Order placed successfully',
-    timestamp: now.toISOString()
-  };
-  
-  const newOrder: Order = {
-    id: `order-${Date.now()}`,
-    userId: user.id,
-    userName: user.name,
-    userEmail: user.email,
-    userPhone: user.phone,
-    productId: product.id,
-    productName: product.name,
-    productPrice: product.price,
-    quantity,
-    totalAmount: product.price * quantity,
-    status: 'Pending',
-    address,
-    trackingHistory: [initialTracking],
-    estimatedDelivery: estimatedDelivery.toISOString(),
-    createdAt: now.toISOString(),
-    updatedAt: now.toISOString()
-  };
-  
-  orders.push(newOrder);
-  localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
-  return newOrder;
-};
+): Promise<Order | null> => {
+  try {
+    const addressString = `${address.addressLine1}, ${address.city}, ${address.state} - ${address.pincode}`;
 
-export const updateOrderStatus = (orderId: string, status: Order['status']): Order | null => {
-  const orders = getOrders();
-  const index = orders.findIndex(o => o.id === orderId);
-  
-  if (index === -1) return null;
-  
-  const statusMessages: Record<Order['status'], string> = {
-    'Pending': 'Order is being reviewed',
-    'Confirmed': 'Order confirmed and will be processed soon',
-    'Processing': 'Order is being prepared for shipment',
-    'Shipped': 'Order has been shipped',
-    'Out for Delivery': 'Order is out for delivery',
-    'Delivered': 'Order has been delivered successfully',
-    'Cancelled': 'Order has been cancelled'
-  };
-  
-  const newTrackingEvent: TrackingEvent = {
-    status,
-    message: statusMessages[status],
-    timestamp: new Date().toISOString()
-  };
-  
-  const existingHistory = orders[index].trackingHistory || [];
-  
-  orders[index] = {
-    ...orders[index],
-    status,
-    trackingHistory: [...existingHistory, newTrackingEvent],
-    updatedAt: new Date().toISOString()
-  };
-  
-  localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
-  return orders[index];
-};
+    const payload = {
+      products: [{ productId: product.id, quantity }],
+      totalAmount: product.price * quantity,
+      address: addressString
+    };
 
-export const cancelOrder = (orderId: string, cancellationReason: string): Order | null => {
-  const orders = getOrders();
-  const index = orders.findIndex(o => o.id === orderId);
-  
-  if (index === -1) return null;
-  
-  // Only allow cancellation for Pending, Confirmed, or Processing orders
-  if (orders[index].status !== 'Pending' && orders[index].status !== 'Confirmed' && orders[index].status !== 'Processing') {
-    return null;
+    const res = await axios.post(`${API_URL}/orders/neworder`, payload, { headers: getAuthHeader() });
+    const o = res.data.order;
+
+    if (o) {
+      return {
+        id: o._id,
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        userPhone: user.phone,
+        productId: product.id,
+        productName: product.name,
+        productPrice: product.price,
+        quantity,
+        totalAmount: o.totalAmount,
+        status: o.status,
+        address: address,
+        trackingHistory: [],
+        createdAt: o.createdAt,
+        updatedAt: o.updatedAt || o.createdAt
+      };
+    }
+  } catch (error) {
+    console.error("Create order failed:", error);
   }
-  
-  const cancellationEvent: TrackingEvent = {
-    status: 'Cancelled',
-    message: `Order cancelled: ${cancellationReason}`,
-    timestamp: new Date().toISOString()
-  };
-  
-  const existingHistory = orders[index].trackingHistory || [];
-  
-  orders[index] = {
-    ...orders[index],
-    status: 'Cancelled',
-    cancellationReason,
-    trackingHistory: [...existingHistory, cancellationEvent],
-    updatedAt: new Date().toISOString()
-  };
-  
-  localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
-  return orders[index];
+  return null;
 };
 
-export const getPendingOrdersCount = (): number => {
-  const orders = getOrders();
-  return orders.filter(o => o.status === 'Pending').length;
-};
+// --- Wishlist & Cart (Keep LocalStorage implementation) ---
 
-// Wishlist Functions
 export const getWishlist = (): string[] => {
   const wishlistStr = localStorage.getItem(STORAGE_KEYS.WISHLIST);
   return wishlistStr ? JSON.parse(wishlistStr) : [];
@@ -252,13 +210,8 @@ export const getWishlist = (): string[] => {
 export const toggleWishlist = (productId: string): void => {
   const wishlist = getWishlist();
   const index = wishlist.indexOf(productId);
-  
-  if (index === -1) {
-    wishlist.push(productId);
-  } else {
-    wishlist.splice(index, 1);
-  }
-  
+  if (index === -1) wishlist.push(productId);
+  else wishlist.splice(index, 1);
   localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(wishlist));
 };
 
@@ -267,13 +220,6 @@ export const isInWishlist = (productId: string): boolean => {
   return wishlist.includes(productId);
 };
 
-export const getWishlistProducts = (): Product[] => {
-  const wishlist = getWishlist();
-  const products = getProducts();
-  return products.filter(p => wishlist.includes(p.id));
-};
-
-// Cart Functions
 export const getCart = (): string[] => {
   const cartStr = localStorage.getItem(STORAGE_KEYS.CART);
   return cartStr ? JSON.parse(cartStr) : [];
@@ -290,7 +236,6 @@ export const addToCart = (productId: string): void => {
 export const removeFromCart = (productId: string): void => {
   const cart = getCart();
   const index = cart.indexOf(productId);
-  
   if (index !== -1) {
     cart.splice(index, 1);
     localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
@@ -302,12 +247,55 @@ export const isInCart = (productId: string): boolean => {
   return cart.includes(productId);
 };
 
-export const getCartProducts = (): Product[] => {
-  const cart = getCart();
-  const products = getProducts();
-  return products.filter(p => cart.includes(p.id));
-};
-
 export const clearCart = (): void => {
   localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify([]));
+};
+
+export const getCartProducts = async (): Promise<Product[]> => {
+  const cartIds = getCart();
+  const allProducts = await getProducts();
+  return allProducts.filter(p => cartIds.includes(p.id));
+};
+
+export const getFeaturedProducts = async (): Promise<Product[]> => {
+  const allProducts = await getProducts();
+  // Assuming 'featured' is a property, or just return first 4 for now if not available in backend model yet
+  return allProducts.slice(0, 4);
+};
+
+export const getOrdersByUserId = async (userId: string): Promise<Order[]> => {
+  // Since we use /myorders which gets orders for the logged in user, 
+  // we can just call getOrders() and filter if really needed, but generally getOrders() is enough.
+  return await getOrders();
+};
+
+export const cancelOrder = async (orderId: string, reason: string): Promise<Order | null> => {
+  try {
+    const res = await axios.post(`${API_URL}/orders/cancelorder`, { orderid: orderId }, { headers: getAuthHeader() });
+    if (res.data.order_update) {
+      // Map back to frontend Order type if needed, or just return a mock success
+      // Simulating return for now based on what we have
+      const o = res.data.order_update;
+      return {
+        id: o._id,
+        userId: o.user,
+        userName: '',
+        userEmail: '',
+        userPhone: '',
+        productId: o.items?.[0]?.product || '',
+        productName: 'Refreshed Item',
+        productPrice: 0,
+        quantity: 0,
+        totalAmount: o.totalAmount,
+        status: o.status,
+        address: { fullName: '', phoneNumber: '', addressLine1: o.address, city: '', state: '', pincode: '' },
+        trackingHistory: [],
+        createdAt: o.createdAt,
+        updatedAt: o.updatedAt
+      };
+    }
+  } catch (e) {
+    console.error("Cancel order failed", e);
+  }
+  return null;
 };

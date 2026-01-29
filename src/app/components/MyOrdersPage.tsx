@@ -27,9 +27,9 @@ export function MyOrdersPage() {
   const [error, setError] = useState('');
   const user = getCurrentUser();
 
-  const loadOrders = () => {
+  const loadOrders = async () => {
     if (user) {
-      const userOrders = getOrdersByUserId(user.id);
+      const userOrders = await getOrdersByUserId(user.id);
       // Sort by newest first
       userOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setOrders(userOrders);
@@ -47,14 +47,14 @@ export function MyOrdersPage() {
     setError('');
   };
 
-  const handleCancelConfirm = () => {
+  const handleCancelConfirm = async () => {
     if (!cancellationReason.trim()) {
       setError('Please provide a reason for cancellation');
       return;
     }
 
     if (selectedOrder) {
-      const result = cancelOrder(selectedOrder.id, cancellationReason);
+      const result = await cancelOrder(selectedOrder.id, cancellationReason);
       if (result) {
         toast.success('Order cancelled successfully');
         setCancelDialogOpen(false);
@@ -236,47 +236,44 @@ export function MyOrdersPage() {
                       <div className="relative">
                         {/* Progress Line */}
                         <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200" style={{ width: 'calc(100% - 40px)', marginLeft: '20px' }}>
-                          <div 
+                          <div
                             className="h-full bg-blue-600 transition-all duration-500"
                             style={{ width: `${(getStatusIndex(order.status) / (getTrackingSteps().length - 1)) * 100}%` }}
                           />
                         </div>
-                        
+
                         {/* Tracking Steps */}
                         <div className="relative flex justify-between">
                           {getTrackingSteps().map((step, index) => {
                             const currentIndex = getStatusIndex(order.status);
                             const isCompleted = index <= currentIndex;
                             const isCurrent = index === currentIndex;
-                            
+
                             return (
                               <div key={step.status} className="flex flex-col items-center" style={{ flex: '1' }}>
                                 {/* Circle */}
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
-                                  isCompleted 
-                                    ? 'bg-red-600 border-red-600 text-white' 
-                                    : 'bg-white border-gray-300 text-gray-400'
-                                } ${
-                                  isCurrent ? 'ring-4 ring-red-100 scale-110' : ''
-                                }`}>
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${isCompleted
+                                  ? 'bg-red-600 border-red-600 text-white'
+                                  : 'bg-white border-gray-300 text-gray-400'
+                                  } ${isCurrent ? 'ring-4 ring-red-100 scale-110' : ''
+                                  }`}>
                                   {isCompleted ? (
                                     <CheckCircle className="w-5 h-5" />
                                   ) : (
                                     <div className="w-3 h-3 rounded-full bg-gray-300" />
                                   )}
                                 </div>
-                                
+
                                 {/* Label */}
-                                <p className={`text-xs mt-2 text-center font-medium max-w-[80px] ${
-                                  isCompleted ? 'text-gray-900' : 'text-gray-400'
-                                }`}>
+                                <p className={`text-xs mt-2 text-center font-medium max-w-[80px] ${isCompleted ? 'text-gray-900' : 'text-gray-400'
+                                  }`}>
                                   {step.label}
                                 </p>
-                                
+
                                 {/* Timestamp for current/completed */}
                                 {isCompleted && order.trackingHistory && (
                                   <p className="text-[10px] text-gray-500 mt-1">
-                                    {order.trackingHistory.find(e => e.status === step.status) 
+                                    {order.trackingHistory.find(e => e.status === step.status)
                                       ? new Date(order.trackingHistory.find(e => e.status === step.status)!.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
                                       : ''}
                                   </p>
@@ -286,7 +283,7 @@ export function MyOrdersPage() {
                           })}
                         </div>
                       </div>
-                      
+
                       {/* Estimated Delivery */}
                       {order.estimatedDelivery && order.status !== 'Delivered' && (
                         <div className="mt-4 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-800">
@@ -365,7 +362,7 @@ export function MyOrdersPage() {
               Please provide a reason for cancelling this order. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          
+
           <div className="space-y-2">
             <Label htmlFor="cancellation-reason">Cancellation Reason *</Label>
             <Textarea

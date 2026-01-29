@@ -58,12 +58,12 @@ export default function App() {
   };
 
   // Handle order confirmation
-  const handleOrderConfirm = (quantity: number, address: Address) => {
+  const handleOrderConfirm = async (quantity: number, address: Address) => {
     const user = getCurrentUser();
 
     if (!user || !selectedProduct) return;
 
-    createOrder(user, selectedProduct, quantity, address);
+    await createOrder(user, selectedProduct, quantity, address);
 
     toast.success('Order placed successfully! Check "My Orders" for details.');
     setOrderDialogOpen(false);

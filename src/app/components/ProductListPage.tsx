@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import { Input } from '@/app/components/ui/input';
@@ -25,7 +25,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
   const [selectedLocations, setSelectedLocations] = useState<TamilNaduCity[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>(category || 'all');
   const [selectedProcessors, setSelectedProcessors] = useState<string[]>([]);
-  
+
   // Collapsible sections state
   const [isCategoryOpen, setIsCategoryOpen] = useState(true);
   const [isPriceOpen, setIsPriceOpen] = useState(true);
@@ -33,7 +33,16 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
   const [isTypeOpen, setIsTypeOpen] = useState(false);
   const [isProcessorOpen, setIsProcessorOpen] = useState(false);
 
-  const allProducts = getProducts();
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const products = await getProducts();
+      setAllProducts(products || []);
+    };
+    fetchProducts();
+  }, []);
+
   const products = selectedCategory === 'all' ? allProducts : allProducts.filter(p => p.category === selectedCategory);
 
   const brands: Brand[] = ['Dell', 'HP', 'Lenovo', 'Apple', 'ASUS', 'Acer', 'MSI', 'Samsung', 'Other'];
@@ -76,7 +85,9 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
     result.sort((a, b) => {
       switch (sortBy) {
         case 'date':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          const dateA = new Date(a.createdAt || 0).getTime();
+          const dateB = new Date(b.createdAt || 0).getTime();
+          return (isNaN(dateB) ? 0 : dateB) - (isNaN(dateA) ? 0 : dateA);
         case 'price-low':
           return a.price - b.price;
         case 'price-high':
@@ -141,11 +152,10 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`flex items-center w-full text-left text-sm py-1 transition-colors ${
-                  selectedCategory === cat
-                    ? 'text-blue-600 font-medium'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
+                className={`flex items-center w-full text-left text-sm py-1 transition-colors ${selectedCategory === cat
+                  ? 'text-blue-600 font-medium'
+                  : 'text-gray-600 hover:text-gray-900'
+                  }`}
               >
                 <span className="mr-2">›</span>
                 {cat === 'all' ? 'All Categories' : cat}
@@ -175,8 +185,8 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
               className="mb-2"
             />
             <div className="flex items-center gap-2">
-              <Select 
-                value={priceRange[0].toString()} 
+              <Select
+                value={priceRange[0].toString()}
                 onValueChange={(value) => setPriceRange([parseInt(value), priceRange[1]])}
               >
                 <SelectTrigger className="flex-1">
@@ -191,8 +201,8 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
                 </SelectContent>
               </Select>
               <span className="text-gray-500">to</span>
-              <Select 
-                value={priceRange[1].toString()} 
+              <Select
+                value={priceRange[1].toString()}
                 onValueChange={(value) => setPriceRange([priceRange[0], parseInt(value)])}
               >
                 <SelectTrigger className="flex-1">
@@ -374,67 +384,64 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
 
                 {/* Quick Filters Row */}
                 <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-200">
-                {/* Condition Filters */}
-                <button
-                  onClick={() => toggleCondition('New')}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    selectedConditions.includes('New')
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  New
-                </button>
-                <button
-                  onClick={() => toggleCondition('Used')}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    selectedConditions.includes('Used')
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  Used
-                </button>
-
-                {/* Popular Brand Filters */}
-                {['Dell', 'HP', 'Lenovo', 'Apple'].map((brand) => (
+                  {/* Condition Filters */}
                   <button
-                    key={brand}
-                    onClick={() => toggleBrand(brand as Brand)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      selectedBrands.includes(brand as Brand)
+                    onClick={() => toggleCondition('New')}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedConditions.includes('New')
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    New
+                  </button>
+                  <button
+                    onClick={() => toggleCondition('Used')}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedConditions.includes('Used')
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                  >
+                    Used
+                  </button>
+
+                  {/* Popular Brand Filters */}
+                  {['Dell', 'HP', 'Lenovo', 'Apple'].map((brand) => (
+                    <button
+                      key={brand}
+                      onClick={() => toggleBrand(brand as Brand)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedBrands.includes(brand as Brand)
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {brand}
-                  </button>
-                ))}
+                        }`}
+                    >
+                      {brand}
+                    </button>
+                  ))}
 
-                {/* Price Range Display */}
-                {(priceRange[0] > 0 || priceRange[1] < 200000) && (
-                  <div className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-2">
-                    ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
+                  {/* Price Range Display */}
+                  {(priceRange[0] > 0 || priceRange[1] < 200000) && (
+                    <div className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium flex items-center gap-2">
+                      ₹{priceRange[0].toLocaleString()} - ₹{priceRange[1].toLocaleString()}
+                      <button
+                        onClick={() => setPriceRange([0, 200000])}
+                        className="hover:text-blue-900"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Clear All Filters */}
+                  {activeFiltersCount > 0 && (
                     <button
-                      onClick={() => setPriceRange([0, 200000])}
-                      className="hover:text-blue-900"
+                      onClick={clearFilters}
+                      className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-full text-sm font-medium flex items-center gap-1"
                     >
                       <X className="w-3 h-3" />
+                      Clear All
                     </button>
-                  </div>
-                )}
-
-                {/* Clear All Filters */}
-                {activeFiltersCount > 0 && (
-                  <button
-                    onClick={clearFilters}
-                    className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-full text-sm font-medium flex items-center gap-1"
-                  >
-                    <X className="w-3 h-3" />
-                    Clear All
-                  </button>
-                )}
-              </div>
+                  )}
+                </div>
               </div>
             </div>
 

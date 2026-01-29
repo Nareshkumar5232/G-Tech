@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { ArrowRight, Laptop, HardDrive, Headphones, Wifi, Shield, TrendingUp, ShoppingCart, IndianRupee } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent } from '@/app/components/ui/card';
@@ -12,9 +13,21 @@ interface HomePageProps {
 }
 
 export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
-  const featuredProducts = getFeaturedProducts();
-  const allProducts = getProducts();
-  const featuredAccessories = allProducts.filter(p => p.category === 'Accessories' && p.featured);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [featuredAccessories, setFeaturedAccessories] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const featured = await getFeaturedProducts();
+      setFeaturedProducts(featured || []);
+
+      const products = await getProducts();
+      setAllProducts(products || []);
+      setFeaturedAccessories(products.filter(p => p.category === 'Accessories' && p.featured) || []);
+    };
+    fetchData();
+  }, []);
 
   const handleAccessoryBuy = (product: Product) => {
     const user = getCurrentUser();
