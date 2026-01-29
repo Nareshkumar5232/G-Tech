@@ -110,26 +110,26 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
 
       {/* Hero Section */}
       <section className="bg-white text-gray-900 py-12">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-6 flex flex-col items-center text-center">
           <div className="max-w-3xl">
             <div className="inline-block px-4 py-2 bg-blue-600/10 border border-blue-600 rounded-full text-sm mb-4 text-blue-600">
               ✨ Your Trusted Laptop Partner in Chennai
             </div>
-            
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               New & Used Laptops at
               <span className="text-blue-600"> Best Prices</span>
             </h1>
-            
-            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+
+            <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
               Sales & buyback, refurbished laptops, repair & services for your business needs.
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-3">
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 onClick={() => onNavigate('all-products')}
                 size="lg"
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8"
               >
                 Browse All Products
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -138,7 +138,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                 onClick={() => onNavigate('used-laptops')}
                 size="lg"
                 variant="outline"
-                className="border-gray-300 text-gray-900 hover:bg-gray-100 hover:text-gray-900"
+                className="border-gray-300 text-gray-900 hover:bg-gray-100 hover:text-gray-900 px-8"
               >
                 View Used Laptops
               </Button>
@@ -175,12 +175,12 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
-                  
+
                   {/* Name */}
                   <h4 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem]">
                     {accessory.name}
                   </h4>
-                  
+
                   {/* Price */}
                   <div className="flex items-baseline gap-1 mb-3">
                     <IndianRupee className="w-4 h-4 text-blue-600 font-bold" />
@@ -188,7 +188,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                       {accessory.price.toLocaleString('en-IN')}
                     </span>
                   </div>
-                  
+
                   {/* Buy Button */}
                   <Button
                     onClick={() => handleAccessoryBuy(accessory)}
