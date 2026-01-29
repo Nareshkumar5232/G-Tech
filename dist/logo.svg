@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 370" width="850" height="370">
+  <defs>
+    <linearGradient id="lightBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#33C3F0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0EA5E9;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="mediumBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1E90FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="darkBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Top wave - Light blue/cyan -->
+  <path d="M 60 175 Q 150 130, 280 160 Q 420 190, 560 140 Q 700 90, 790 120" 
+        stroke="url(#lightBlue)" 
+        stroke-width="28" 
+        fill="none" 
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  
+  <!-- Second wave - Medium light blue -->
+  <path d="M 60 195 Q 160 150, 300 180 Q 440 210, 580 165 Q 720 115, 800 145" 
+        stroke="url(#lightBlue)" 
+        stroke-width="32" 
+        fill="none" 
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        opacity="0.9"/>
+  
+  <!-- Third wave - Medium blue -->
+  <path d="M 60 215 Q 170 170, 310 200 Q 450 230, 595 185 Q 730 140, 805 165" 
+        stroke="url(#mediumBlue)" 
+        stroke-width="36" 
+        fill="none" 
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  
+  <!-- Bottom wave - Dark blue -->
+  <path d="M 60 240 Q 180 195, 320 225 Q 460 255, 605 210 Q 740 165, 810 190" 
+        stroke="url(#darkBlue)" 
+        stroke-width="38" 
+        fill="none" 
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>

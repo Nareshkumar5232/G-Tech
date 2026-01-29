@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { ShoppingCart, IndianRupee, MapPin, Calendar } from 'lucide-react';
+import { ShoppingCart, IndianRupee, MapPin, Calendar, X } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/app/components/ui/card';
 import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
-import { addToCart, isInCart } from '@/lib/store';
+import { addToCart, isInCart, removeFromCart } from '@/lib/store';
 import type { Product } from '@/types';
 
 interface ProductCardProps {
@@ -32,6 +32,12 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
     e.stopPropagation();
     addToCart(product.id);
     setInCart(true);
+  };
+
+  const handleRemoveFromCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    removeFromCart(product.id);
+    setInCart(false);
   };
 
   return (
@@ -128,18 +134,24 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
 
       <CardFooter className="p-4 pt-0">
         <div className="flex gap-2 w-full">
-          <Button
-            onClick={handleAddToCart}
-            disabled={inCart}
-            className={`flex-1 ${
-              inCart
-                ? 'bg-green-600 hover:bg-green-700'
-                : 'bg-gray-700 hover:bg-gray-800'
-            } text-white`}
-          >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            {inCart ? 'In Cart' : 'Add to Cart'}
-          </Button>
+          {inCart ? (
+            <Button
+              onClick={handleRemoveFromCart}
+              className="flex-1 bg-green-600 hover:bg-red-600 text-white transition-colors duration-200"
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              In Cart
+              <X className="w-4 h-4 ml-2" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleAddToCart}
+              className="flex-1 bg-gray-700 hover:bg-gray-800 text-white"
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              Add to Cart
+            </Button>
+          )}
           <Button
             onClick={() => onOrderClick(product)}
             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
