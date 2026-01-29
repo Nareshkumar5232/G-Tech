@@ -21,14 +21,18 @@ export function CartPage({ onOrderClick }: CartPageProps) {
     setCartProducts(products);
   };
 
-  const handleRemoveFromCart = (productId: string) => {
-    removeFromCart(productId);
+  const handleRemoveFromCart = async (productId: string) => {
+    await removeFromCart(productId);
     loadCart();
   };
 
-  const handleClearCart = () => {
+  const handleClearCart = async () => {
     if (confirm('Are you sure you want to clear your cart?')) {
       clearCart();
+      // Note: clearCart is currently local-only in store.ts, so this might strictly rely on local state
+      // preventing server sync in getCartProducts might be needed or we need a server clear endpoint.
+      // For now, re-loading might bring items back if server has them. 
+      // We will perform a manual "refresh" but be aware of this limitation.
       loadCart();
     }
   };

@@ -225,20 +225,44 @@ export const getCart = (): string[] => {
   return cartStr ? JSON.parse(cartStr) : [];
 };
 
-export const addToCart = (productId: string): void => {
+export const addToCart = async (productId: string): Promise<boolean> => {
+  // Optimistic update
   const cart = getCart();
   if (!cart.includes(productId)) {
     cart.push(productId);
     localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
   }
+
+  // API Call
+  try {
+    await axios.post(`${API_URL}/cart/add`, { productId, quantity: 1 }, { headers: getAuthHeader() });
+    return true;
+  } catch (error) {
+    console.error("Failed to add to cart on server:", error);
+    // Rollback implementation could go here, but for now we keep local state
+    return false;
+  }
 };
 
-export const removeFromCart = (productId: string): void => {
+export const removeFromCart = async (productId: string): Promise<boolean> => {
+  // Optimistic update
   const cart = getCart();
   const index = cart.indexOf(productId);
   if (index !== -1) {
     cart.splice(index, 1);
     localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
+  }
+
+  // API Call
+  try {
+    await axios.delete(`${API_URL}/cart/remove`, {
+      headers: getAuthHeader(),
+      data: { productId }
+    });
+    return true;
+  } catch (error) {
+    console.error("Failed to remove from cart on server:", error);
+    return false;
   }
 };
 
@@ -249,9 +273,35 @@ export const isInCart = (productId: string): boolean => {
 
 export const clearCart = (): void => {
   localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify([]));
+  // Note: We might want a clear cart API endpoint too if needed
 };
 
 export const getCartProducts = async (): Promise<Product[]> => {
+  try {
+    // Fetch from server for authoritative state
+    const res = await axios.get(`${API_URL}/cart`, { headers: getAuthHeader() });
+    const cart = res.data;
+
+    if (cart && cart.items) {
+      // Sync local storage with server state (optional but good for consistency)
+      const serverIds = cart.items.map((item: any) => item.product._id || item.product.id);
+      localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(serverIds));
+
+      return cart.items.map((item: any) => {
+        const p = item.product;
+        return {
+          ...p,
+          id: p._id || p.id,
+          cartItemId: item._id, // if needed
+          quantity: item.quantity
+        };
+      });
+    }
+  } catch (error) {
+    console.error("Failed to fetch cart from server:", error);
+  }
+
+  // Fallback to local storage + getProducts if server fails
   const cartIds = getCart();
   const allProducts = await getProducts();
   return allProducts.filter(p => cartIds.includes(p.id));

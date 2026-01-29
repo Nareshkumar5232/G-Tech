@@ -28,16 +28,16 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [inCart, setInCart] = useState(isInCart(product.id));
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    addToCart(product.id);
-    setInCart(true);
+    setInCart(true); // Optimistic UI update
+    await addToCart(product.id);
   };
 
-  const handleRemoveFromCart = (e: React.MouseEvent) => {
+  const handleRemoveFromCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    removeFromCart(product.id);
-    setInCart(false);
+    setInCart(false); // Optimistic UI update
+    await removeFromCart(product.id);
   };
 
   return (
@@ -49,14 +49,13 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        
+
         {/* Condition Badge */}
         <Badge
-          className={`absolute top-3 left-3 ${
-            product.condition === 'New'
+          className={`absolute top-3 left-3 ${product.condition === 'New'
               ? 'bg-green-600 hover:bg-green-700'
               : 'bg-blue-600 hover:bg-blue-700'
-          }`}
+            }`}
         >
           {product.condition}
         </Badge>
@@ -71,11 +70,10 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
                   e.stopPropagation();
                   setCurrentImageIndex(index);
                 }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentImageIndex
+                className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex
                     ? 'bg-red-600 w-6'
                     : 'bg-white/50 hover:bg-white/80'
-                }`}
+                  }`}
               />
             ))}
           </div>
