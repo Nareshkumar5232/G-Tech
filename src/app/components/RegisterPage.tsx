@@ -28,7 +28,7 @@ export function RegisterPage({ onNavigate, onRegisterSuccess }: RegisterPageProp
     setError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -69,13 +69,13 @@ export function RegisterPage({ onNavigate, onRegisterSuccess }: RegisterPageProp
     }
 
     // Attempt registration
-    const user = register(formData.email, formData.password, formData.name, formData.phone);
+    const user = await register(formData.email, formData.password, formData.name, formData.phone);
 
     if (user) {
       onRegisterSuccess();
       onNavigate('home');
     } else {
-      setError('An account with this email already exists');
+      setError('Registration failed. Email might already be in use.');
     }
 
     setLoading(false);
@@ -94,132 +94,132 @@ export function RegisterPage({ onNavigate, onRegisterSuccess }: RegisterPageProp
           Back
         </Button>
         <Card className="w-full">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-red-600 p-3 rounded-lg">
-              <div className="w-10 h-10 flex items-center justify-center">
-                <span className="text-3xl font-bold text-white">G</span>
+          <CardHeader className="space-y-1">
+            <div className="flex items-center justify-center mb-4">
+              <div className="bg-red-600 p-3 rounded-lg">
+                <div className="w-10 h-10 flex items-center justify-center">
+                  <span className="text-3xl font-bold text-white">G</span>
+                </div>
               </div>
             </div>
-          </div>
-          <CardTitle className="text-2xl text-center">Create Account</CardTitle>
-          <CardDescription className="text-center">
-            Join G-TECH INNOVATION to start shopping
-          </CardDescription>
-        </CardHeader>
+            <CardTitle className="text-2xl text-center">Create Account</CardTitle>
+            <CardDescription className="text-center">
+              Join G-TECH INNOVATION to start shopping
+            </CardDescription>
+          </CardHeader>
 
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder=""
-                  value={formData.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
-                  className="pl-10"
-                  autoComplete="name"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder=""
+                    value={formData.name}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    className="pl-10"
+                    autoComplete="name"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder=""
-                  value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  className="pl-10"
-                  autoComplete="email"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder=""
+                    value={formData.email}
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    className="pl-10"
+                    autoComplete="email"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder=""
-                  value={formData.phone}
-                  onChange={(e) => handleChange('phone', e.target.value)}
-                  className="pl-10"
-                  autoComplete="tel"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder=""
+                    value={formData.phone}
+                    onChange={(e) => handleChange('phone', e.target.value)}
+                    className="pl-10"
+                    autoComplete="tel"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder=""
-                  value={formData.password}
-                  onChange={(e) => handleChange('password', e.target.value)}
-                  className="pl-10"
-                  autoComplete="new-password"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder=""
+                    value={formData.password}
+                    onChange={(e) => handleChange('password', e.target.value)}
+                    className="pl-10"
+                    autoComplete="new-password"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder=""
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                  className="pl-10"
-                  autoComplete="new-password"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder=""
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleChange('confirmPassword', e.target.value)}
+                    className="pl-10"
+                    autoComplete="new-password"
+                  />
+                </div>
               </div>
-            </div>
-          </CardContent>
+            </CardContent>
 
-          <CardFooter className="flex flex-col gap-3">
-            <Button
-              type="submit"
-              className="w-full bg-red-600 hover:bg-red-700"
-              disabled={loading}
-            >
-              {loading ? 'Creating Account...' : 'Create Account'}
-            </Button>
-
-            <div className="text-center text-sm text-gray-600">
-              Already have an account?{' '}
-              <button
-                type="button"
-                onClick={() => onNavigate('login')}
-                className="text-red-600 hover:underline font-medium"
+            <CardFooter className="flex flex-col gap-3">
+              <Button
+                type="submit"
+                className="w-full bg-red-600 hover:bg-red-700"
+                disabled={loading}
               >
-                Login here
-              </button>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
+                {loading ? 'Creating Account...' : 'Create Account'}
+              </Button>
+
+              <div className="text-center text-sm text-gray-600">
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  onClick={() => onNavigate('login')}
+                  className="text-red-600 hover:underline font-medium"
+                >
+                  Login here
+                </button>
+              </div>
+            </CardFooter>
+          </form>
+        </Card>
       </div>
     </div>
   );

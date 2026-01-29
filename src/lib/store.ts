@@ -1,8 +1,13 @@
 import { User, Product, Order, Address, TrackingEvent } from '@/types';
 import { initialProducts } from './mockData';
 
+import axios from 'axios';
+
+const API_URL = 'http://localhost:5000/api';
+
 const STORAGE_KEYS = {
   USER: 'gtech_current_user',
+  TOKEN: 'gtech_auth_token',
   PRODUCTS: 'gtech_products',
   ORDERS: 'gtech_orders',
   USERS: 'gtech_users',
@@ -10,42 +15,60 @@ const STORAGE_KEYS = {
 };
 
 // Auth Functions
-export const login = (email: string, password: string): User | null => {
-  const users = getUsers();
-  const user = users.find(u => u.email === email);
-  
-  // For demo purposes, checking a simple password
-  // In production, this would verify hashed passwords
-  if (user && password === 'password123') {
-    setCurrentUser(user);
-    return user;
+export const login = async (email: string, password: string): Promise<User | null> => {
+  try {
+    const res = await axios.post(`${API_URL}/auth/login`, { mail: email, password });
+    if (res.data.token) {
+      const token = res.data.token;
+      localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+
+      // Fetch user profile to get full details
+      const profileRes = await axios.get(`${API_URL}/users/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const user: User = {
+        id: profileRes.data._id,
+        email: profileRes.data.mail,
+        name: profileRes.data.name,
+        phone: profileRes.data.mobileno || '',
+        // Add other fields if needed map from backend to frontend User type
+      };
+
+      setCurrentUser(user);
+      return user;
+    }
+  } catch (error) {
+    console.error("Login Error:", error);
+    return null;
   }
   return null;
 };
 
-export const register = (email: string, password: string, name: string, phone: string): User | null => {
-  const users = getUsers();
-  
-  // Check if user already exists
-  if (users.find(u => u.email === email)) {
+export const register = async (email: string, password: string, name: string, phone: string): Promise<User | null> => {
+  try {
+    const res = await axios.post(`${API_URL}/auth/register`, {
+      mail: email,
+      password,
+      name,
+      mobileno: phone
+    });
+
+    if (res.status === 201) {
+      // Auto login or return success indication? 
+      // For now, let's auto-login to get the token and user obj
+      return await login(email, password);
+    }
+  } catch (error) {
+    console.error("Register Error:", error);
     return null;
   }
-  
-  const newUser: User = {
-    id: `user-${Date.now()}`,
-    email,
-    name,
-    phone
-  };
-  
-  users.push(newUser);
-  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-  setCurrentUser(newUser);
-  return newUser;
+  return null;
 };
 
 export const logout = () => {
   localStorage.removeItem(STORAGE_KEYS.USER);
+  localStorage.removeItem(STORAGE_KEYS.TOKEN);
 };
 
 export const getCurrentUser = (): User | null => {
@@ -58,8 +81,9 @@ export const setCurrentUser = (user: User) => {
 };
 
 export const getUsers = (): User[] => {
-  const usersStr = localStorage.getItem(STORAGE_KEYS.USERS);
-  return usersStr ? JSON.parse(usersStr) : [];
+  // Not used in frontend typically, or maybe used for admin simulation previously. 
+  // Returning empty or fetching from API if really needed (but typical user app shouldn't see all users)
+  return [];
 };
 
 // Product Functions
@@ -102,9 +126,9 @@ export const addProduct = (product: Omit<Product, 'id'>): Product => {
 export const updateProduct = (id: string, updates: Partial<Product>): Product | null => {
   const products = getProducts();
   const index = products.findIndex(p => p.id === id);
-  
+
   if (index === -1) return null;
-  
+
   products[index] = { ...products[index], ...updates };
   localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
   return products[index];
@@ -113,9 +137,9 @@ export const updateProduct = (id: string, updates: Partial<Product>): Product | 
 export const deleteProduct = (id: string): boolean => {
   const products = getProducts();
   const filtered = products.filter(p => p.id !== id);
-  
+
   if (filtered.length === products.length) return false;
-  
+
   localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(filtered));
   return true;
 };
@@ -140,13 +164,13 @@ export const createOrder = (
   const orders = getOrders();
   const now = new Date();
   const estimatedDelivery = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-  
+
   const initialTracking: TrackingEvent = {
     status: 'Pending',
     message: 'Order placed successfully',
     timestamp: now.toISOString()
   };
-  
+
   const newOrder: Order = {
     id: `order-${Date.now()}`,
     userId: user.id,
@@ -165,7 +189,7 @@ export const createOrder = (
     createdAt: now.toISOString(),
     updatedAt: now.toISOString()
   };
-  
+
   orders.push(newOrder);
   localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
   return newOrder;
@@ -174,9 +198,9 @@ export const createOrder = (
 export const updateOrderStatus = (orderId: string, status: Order['status']): Order | null => {
   const orders = getOrders();
   const index = orders.findIndex(o => o.id === orderId);
-  
+
   if (index === -1) return null;
-  
+
   const statusMessages: Record<Order['status'], string> = {
     'Pending': 'Order is being reviewed',
     'Confirmed': 'Order confirmed and will be processed soon',
@@ -186,22 +210,22 @@ export const updateOrderStatus = (orderId: string, status: Order['status']): Ord
     'Delivered': 'Order has been delivered successfully',
     'Cancelled': 'Order has been cancelled'
   };
-  
+
   const newTrackingEvent: TrackingEvent = {
     status,
     message: statusMessages[status],
     timestamp: new Date().toISOString()
   };
-  
+
   const existingHistory = orders[index].trackingHistory || [];
-  
+
   orders[index] = {
     ...orders[index],
     status,
     trackingHistory: [...existingHistory, newTrackingEvent],
     updatedAt: new Date().toISOString()
   };
-  
+
   localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
   return orders[index];
 };
@@ -209,22 +233,22 @@ export const updateOrderStatus = (orderId: string, status: Order['status']): Ord
 export const cancelOrder = (orderId: string, cancellationReason: string): Order | null => {
   const orders = getOrders();
   const index = orders.findIndex(o => o.id === orderId);
-  
+
   if (index === -1) return null;
-  
+
   // Only allow cancellation for Pending, Confirmed, or Processing orders
   if (orders[index].status !== 'Pending' && orders[index].status !== 'Confirmed' && orders[index].status !== 'Processing') {
     return null;
   }
-  
+
   const cancellationEvent: TrackingEvent = {
     status: 'Cancelled',
     message: `Order cancelled: ${cancellationReason}`,
     timestamp: new Date().toISOString()
   };
-  
+
   const existingHistory = orders[index].trackingHistory || [];
-  
+
   orders[index] = {
     ...orders[index],
     status: 'Cancelled',
@@ -232,7 +256,7 @@ export const cancelOrder = (orderId: string, cancellationReason: string): Order 
     trackingHistory: [...existingHistory, cancellationEvent],
     updatedAt: new Date().toISOString()
   };
-  
+
   localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
   return orders[index];
 };
@@ -251,13 +275,13 @@ export const getWishlist = (): string[] => {
 export const toggleWishlist = (productId: string): void => {
   const wishlist = getWishlist();
   const index = wishlist.indexOf(productId);
-  
+
   if (index === -1) {
     wishlist.push(productId);
   } else {
     wishlist.splice(index, 1);
   }
-  
+
   localStorage.setItem(STORAGE_KEYS.WISHLIST, JSON.stringify(wishlist));
 };
 
