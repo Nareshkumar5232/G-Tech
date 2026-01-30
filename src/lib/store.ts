@@ -128,29 +128,41 @@ export const getProductById = async (id: string): Promise<Product | undefined> =
 export const getOrders = async (): Promise<Order[]> => {
   try {
     const res = await axios.get<any[]>(`${API_URL}/orders/myorders`, { headers: getAuthHeader() });
+    console.log("Orders response:", res.data); // Debug
 
-    return res.data.map((o: any) => ({
-      id: o._id,
-      userId: o.user,
-      userName: '',
-      userEmail: '',
-      userPhone: '',
-      productId: o.items?.[0]?.product?._id || '',
-      productName: o.items?.[0]?.product?.name || 'Multiple Items',
-      productPrice: 0,
-      quantity: o.items?.[0]?.quantity || 0,
-      totalAmount: o.totalAmount,
-      status: o.status,
-      address: {
-        fullName: 'Unknown',
+    return res.data.map((o: any) => {
+      // Map address correctly. Backend might return a string or object? 
+      // Based on controller, it saves 'address' which comes from req.body.address.
+      // If frontend sent a string, it is a string. If it sent an object... wait, createOrder sends a string addressString.
+      // But let's handle if we improve createOrder later.
+
+      // We need to parse the address string if it's a string to fill the Address object fields
+      let addrObj: Address = {
+        fullName: 'Ordered Location',
         phoneNumber: '',
-        addressLine1: o.address,
+        addressLine1: typeof o.address === 'string' ? o.address : (o.address?.addressLine1 || ''),
         city: '', state: '', pincode: ''
-      },
-      trackingHistory: [],
-      createdAt: o.createdAt,
-      updatedAt: o.updatedAt || o.createdAt
-    }));
+      };
+
+      return {
+        id: o._id,
+        userId: o.user,
+        userName: '',
+        userEmail: '',
+        userPhone: '',
+        productId: o.items?.[0]?.product?._id || '', // Now product is populated
+        productName: o.items?.[0]?.product?.name || 'Item',
+        productPrice: o.items?.[0]?.price || 0,
+        quantity: o.items?.[0]?.quantity || 0,
+        totalAmount: o.totalAmount,
+        status: o.status,
+        address: addrObj,
+        trackingHistory: [],
+        createdAt: o.createdAt,
+        updatedAt: o.updatedAt || o.createdAt,
+        estimatedDelivery: o.estimatedDelivery // Pass through if exists
+      };
+    });
   } catch (error) {
     console.error("Fetch orders failed:", error);
     return [];
