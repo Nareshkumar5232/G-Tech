@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const API_URL = 'https://g-tech-backend-1.onrender.com/api';
+const API_URL = 'http://localhost:5000/api';
 
 async function verify() {
     console.log('--- Verifying Products ---');
