@@ -1,7 +1,7 @@
 import { User, Product, Order, Address, TrackingEvent } from '@/types';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // 'https://g-tech-backend-1.onrender.com/api';
+const API_URL = 'https://g-tech-backend-1.onrender.com/api';
 const STORAGE_KEYS = {
   USER: 'gtech_current_user',
   TOKEN: 'gtech_token',
