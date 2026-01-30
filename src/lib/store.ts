@@ -19,9 +19,11 @@ const getAuthHeader = () => {
 
 export const login = async (email: string, password: string): Promise<User | null> => {
   try {
+    console.log("🔐 Attempting login for:", email);
     const res = await axios.post(`${API_URL}/auth/login`, { mail: email, password });
     if (res.data.token && res.data.user) {
       localStorage.setItem(STORAGE_KEYS.TOKEN, res.data.token);
+      console.log("✅ Login successful");
 
       const user: User = {
         id: res.data.user.id || res.data.user._id,
@@ -33,18 +35,25 @@ export const login = async (email: string, password: string): Promise<User | nul
       setCurrentUser(user);
       return user;
     }
-  } catch (error) {
-    console.error("Login failed:", error);
+  } catch (error: any) {
+    console.error("❌ Login failed:", error);
+    if (error.response) {
+      console.error("Error response:", error.response.status, error.response.data);
+      throw new Error(error.response.data?.message || "Login failed");
+    }
+    throw new Error(error.message || "Network error");
   }
   return null;
 };
 
 export const register = async (email: string, password: string, name: string, phone: string): Promise<User | null> => {
   try {
+    console.log("📝 Attempting registration for:", email);
     const res = await axios.post(`${API_URL}/auth/register`, { mail: email, password, name, mobileno: phone });
     // Updated authController returns token and user now
     if (res.data.token && res.data.user) {
       localStorage.setItem(STORAGE_KEYS.TOKEN, res.data.token);
+      console.log("✅ Registration successful");
 
       const user: User = {
         id: res.data.user.id || res.data.user._id,
@@ -56,8 +65,13 @@ export const register = async (email: string, password: string, name: string, ph
       setCurrentUser(user);
       return user;
     }
-  } catch (error) {
-    console.error("Registration failed:", error);
+  } catch (error: any) {
+    console.error("❌ Registration failed:", error);
+    if (error.response) {
+      console.error("Error response:", error.response.status, error.response.data);
+      throw new Error(error.response.data?.message || "Registration failed");
+    }
+    throw new Error(error.message || "Network error");
   }
   return null;
 };
@@ -80,17 +94,19 @@ export const setCurrentUser = (user: User) => {
 
 export const getProducts = async (): Promise<Product[]> => {
   try {
+    console.log("📦 Fetching products from API...");
     const res = await axios.get(`${API_URL}/product`);
-    console.log("API Response:", res.data); // Debug log
+    console.log("✅ Products API Response:", res.data);
 
     const data = res.data;
     const items = Array.isArray(data) ? data : (data.products || []);
 
     if (!items.length) {
-      console.warn("No products found in response");
+      console.warn("⚠️ No products found in response");
       return [];
     }
 
+    console.log(`✅ Found ${items.length} products`);
     return items.map((p: any) => ({
       ...p,
       id: p._id || p.id,
@@ -102,8 +118,11 @@ export const getProducts = async (): Promise<Product[]> => {
       createdAt: p.createdAt || new Date().toISOString(),
       specs: p.specs || [],
     }));
-  } catch (error) {
-    console.error("Fetch products failed:", error);
+  } catch (error: any) {
+    console.error("❌ Fetch products failed:", error);
+    if (error.response) {
+      console.error("Error response:", error.response.status, error.response.data);
+    }
     return [];
   }
 };
@@ -127,9 +146,21 @@ export const getProductById = async (id: string): Promise<Product | undefined> =
 
 export const getOrders = async (): Promise<Order[]> => {
   try {
+    console.log("📋 Fetching user orders...");
     const res = await axios.get<any[]>(`${API_URL}/orders/myorders`, { headers: getAuthHeader() });
-    console.log("Orders response:", res.data); // Debug
+    console.log("✅ Orders response:", res.data);
 
+    if (!res.data || !Array.isArray(res.data)) {
+      console.warn("⚠️ Invalid orders response format");
+      return [];
+    }
+
+    if (res.data.length === 0) {
+      console.log("ℹ️ No orders found for user");
+      return [];
+    }
+
+    console.log(`✅ Found ${res.data.length} orders`);
     return res.data.map((o: any) => {
       // Map address correctly. Backend might return a string or object? 
       // Based on controller, it saves 'address' which comes from req.body.address.
@@ -163,8 +194,15 @@ export const getOrders = async (): Promise<Order[]> => {
         estimatedDelivery: o.estimatedDelivery // Pass through if exists
       };
     });
-  } catch (error) {
-    console.error("Fetch orders failed:", error);
+  } catch (error: any) {
+    console.error("❌ Fetch orders failed:", error);
+    if (error.response) {
+      console.error("Error response:", error.response.status, error.response.data);
+      if (error.response.status === 401) {
+        console.error("Authentication failed - user may need to login again");
+        logout(); // Clear invalid token
+      }
+    }
     return [];
   }
 };
@@ -176,6 +214,7 @@ export const createOrder = async (
   address: Address
 ): Promise<Order | null> => {
   try {
+    console.log("🛒 Creating new order...");
     const addressString = `${address.addressLine1}, ${address.city}, ${address.state} - ${address.pincode}`;
 
     const payload = {
@@ -184,7 +223,10 @@ export const createOrder = async (
       address: addressString
     };
 
+    console.log("📦 Order payload:", payload);
     const res = await axios.post(`${API_URL}/orders/neworder`, payload, { headers: getAuthHeader() });
+    console.log("✅ Order created successfully:", res.data);
+
     const o = res.data.order;
 
     if (o) {
@@ -206,8 +248,13 @@ export const createOrder = async (
         updatedAt: o.updatedAt || o.createdAt
       };
     }
-  } catch (error) {
-    console.error("Create order failed:", error);
+  } catch (error: any) {
+    console.error("❌ Create order failed:", error);
+    if (error.response) {
+      console.error("Error response:", error.response.status, error.response.data);
+      throw new Error(error.response.data?.message || "Failed to create order");
+    }
+    throw new Error(error.message || "Network error");
   }
   return null;
 };
