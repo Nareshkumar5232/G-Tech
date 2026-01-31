@@ -64,23 +64,31 @@ export default function App() {
     if (!user || !selectedProduct) return;
 
     if (paymentMethod === 'online') {
+      let orderData;
       try {
         // 1. Create Order on Backend
         const { createRazorpayOrder, verifyPayment } = await import('@/lib/paymentStore');
-        const orderData = await createRazorpayOrder(selectedProduct.price * quantity);
+        try {
+          orderData = await createRazorpayOrder(selectedProduct.price * quantity);
+        } catch (err: any) {
+          console.error("Backend Create Order Failed", err);
+          toast.error(`Order creation failed: ${err.message || 'Unknown error'}`);
+          return;
+        }
 
-        if (!orderData.success) {
-          toast.error('Failed to create payment order');
+        if (!orderData || !orderData.success) {
+          console.error("Order Data Invalid", orderData);
+          toast.error('Failed to create payment order: Invalid response');
           return;
         }
 
         const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: orderData.order.amount,
           currency: orderData.order.currency,
           name: "G-Tech",
           description: `Order for ${selectedProduct.name}`,
-          image: "https://example.com/your_logo", // You can add a logo here
+          image: "https://example.com/your_logo",
           order_id: orderData.order.id,
           handler: async function (response: any) {
             try {
@@ -93,7 +101,7 @@ export default function App() {
 
               if (verifyRes.success) {
                 // 3. Create Order in Database
-                await createOrder(user, selectedProduct, quantity, address); // You might want to pass payment info here too
+                await createOrder(user, selectedProduct, quantity, address);
                 toast.success('Payment successful! Order placed.');
                 setOrderDialogOpen(false);
                 setSelectedProduct(null);
@@ -116,15 +124,20 @@ export default function App() {
           }
         };
 
+        if (!(window as any).Razorpay) {
+          toast.error("Razorpay SDK not loaded. Please check your internet connection.");
+          return;
+        }
+
         const rzp1 = new (window as any).Razorpay(options);
         rzp1.on('payment.failed', function (response: any) {
           toast.error(response.error.description);
         });
         rzp1.open();
 
-      } catch (error) {
-        console.error("Payment initialization failed", error);
-        toast.error('Failed to initialize payment');
+      } catch (error: any) {
+        console.error("Payment initialization unexpected error", error);
+        toast.error(`Payment failed: ${error.message}`);
       }
     } else {
       // COD Flow
