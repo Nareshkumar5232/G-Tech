@@ -75,7 +75,7 @@ export default function App() {
         }
 
         const options = {
-          key: "rzp_live_S9o6Fpe1ug9kL1", // Enter the Key ID generated from the Dashboard
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
           amount: orderData.order.amount,
           currency: orderData.order.currency,
           name: "G-Tech",
