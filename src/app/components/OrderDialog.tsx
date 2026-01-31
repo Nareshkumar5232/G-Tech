@@ -19,7 +19,7 @@ interface OrderDialogProps {
   product: Product | null;
   open: boolean;
   onClose: () => void;
-  onConfirm: (quantity: number, address: Address) => void;
+  onConfirm: (quantity: number, address: Address, paymentMethod: 'cod' | 'online') => void;
 }
 
 export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogProps) {
@@ -66,12 +66,12 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
 
     setPincodeLoading(true);
     setPincodeVerified(false);
-    
+
     try {
       // Using India Post API for pincode validation
       const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
       const data = await response.json();
-      
+
       if (data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
         const location = data[0].PostOffice[0];
         setAddress(prev => ({
@@ -97,7 +97,7 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
   const handlePincodeChange = (pincode: string) => {
     setAddress({ ...address, pincode });
     setPincodeVerified(false);
-    
+
     // Auto-validate when 6 digits are entered
     if (pincode.length === 6) {
       validatePincode(pincode);
@@ -106,29 +106,29 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
 
   const validateAddress = (): boolean => {
     const newErrors: Partial<Record<keyof Address, string>> = {};
-    
+
     if (!address.fullName.trim()) {
       newErrors.fullName = 'Full name is required';
     }
-    
+
     if (!address.phoneNumber.trim()) {
       newErrors.phoneNumber = 'Phone number is required';
     } else if (!/^[6-9]\d{9}$/.test(address.phoneNumber.replace(/\D/g, ''))) {
       newErrors.phoneNumber = 'Enter a valid 10-digit phone number';
     }
-    
+
     if (!address.addressLine1.trim()) {
       newErrors.addressLine1 = 'Address is required';
     }
-    
+
     if (!address.city.trim()) {
       newErrors.city = 'City is required';
     }
-    
+
     if (!address.state.trim()) {
       newErrors.state = 'State is required';
     }
-    
+
     if (!address.pincode.trim()) {
       newErrors.pincode = 'Pincode is required';
     } else if (!/^\d{6}$/.test(address.pincode)) {
@@ -136,7 +136,7 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
     } else if (!pincodeVerified) {
       newErrors.pincode = 'Please enter a valid pincode to auto-fill city and state';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -152,7 +152,7 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
   };
 
   const handleConfirm = () => {
-    onConfirm(quantity, address);
+    onConfirm(quantity, address, paymentMethod);
     handleClose();
   };
 
@@ -446,15 +446,13 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('cod')}
-                  className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
-                    paymentMethod === 'cod'
-                      ? 'border-red-600 bg-red-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${paymentMethod === 'cod'
+                    ? 'border-red-600 bg-red-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                    }`}
                 >
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    paymentMethod === 'cod' ? 'border-red-600' : 'border-gray-300'
-                  }`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'cod' ? 'border-red-600' : 'border-gray-300'
+                    }`}>
                     {paymentMethod === 'cod' && (
                       <div className="w-3 h-3 rounded-full bg-red-600" />
                     )}
@@ -469,15 +467,13 @@ export function OrderDialog({ product, open, onClose, onConfirm }: OrderDialogPr
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('online')}
-                  className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
-                    paymentMethod === 'online'
-                      ? 'border-red-600 bg-red-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${paymentMethod === 'online'
+                    ? 'border-red-600 bg-red-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                    }`}
                 >
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    paymentMethod === 'online' ? 'border-red-600' : 'border-gray-300'
-                  }`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'online' ? 'border-red-600' : 'border-gray-300'
+                    }`}>
                     {paymentMethod === 'online' && (
                       <div className="w-3 h-3 rounded-full bg-red-600" />
                     )}

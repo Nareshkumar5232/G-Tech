@@ -58,19 +58,82 @@ export default function App() {
   };
 
   // Handle order confirmation
-  const handleOrderConfirm = async (quantity: number, address: Address) => {
+  const handleOrderConfirm = async (quantity: number, address: Address, paymentMethod: 'cod' | 'online') => {
     const user = getCurrentUser();
 
     if (!user || !selectedProduct) return;
 
-    await createOrder(user, selectedProduct, quantity, address);
+    if (paymentMethod === 'online') {
+      try {
+        // 1. Create Order on Backend
+        const { createRazorpayOrder, verifyPayment } = await import('@/lib/paymentStore');
+        const orderData = await createRazorpayOrder(selectedProduct.price * quantity);
 
-    toast.success('Order placed successfully! Check "My Orders" for details.');
-    setOrderDialogOpen(false);
-    setSelectedProduct(null);
+        if (!orderData.success) {
+          toast.error('Failed to create payment order');
+          return;
+        }
 
-    // Force re-render to update pending orders count
-    setForceUpdate(prev => prev + 1);
+        const options = {
+          key: "rzp_live_S9o6Fpe1ug9kL1", // Enter the Key ID generated from the Dashboard
+          amount: orderData.order.amount,
+          currency: orderData.order.currency,
+          name: "G-Tech",
+          description: `Order for ${selectedProduct.name}`,
+          image: "https://example.com/your_logo", // You can add a logo here
+          order_id: orderData.order.id,
+          handler: async function (response: any) {
+            try {
+              // 2. Verify Payment
+              const verifyRes = await verifyPayment({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              });
+
+              if (verifyRes.success) {
+                // 3. Create Order in Database
+                await createOrder(user, selectedProduct, quantity, address); // You might want to pass payment info here too
+                toast.success('Payment successful! Order placed.');
+                setOrderDialogOpen(false);
+                setSelectedProduct(null);
+                setForceUpdate(prev => prev + 1);
+              } else {
+                toast.error('Payment verification failed');
+              }
+            } catch (error) {
+              console.error(error);
+              toast.error('Payment verification failed');
+            }
+          },
+          prefill: {
+            name: address.fullName,
+            email: user.email,
+            contact: address.phoneNumber
+          },
+          theme: {
+            color: "#3399cc"
+          }
+        };
+
+        const rzp1 = new (window as any).Razorpay(options);
+        rzp1.on('payment.failed', function (response: any) {
+          toast.error(response.error.description);
+        });
+        rzp1.open();
+
+      } catch (error) {
+        console.error("Payment initialization failed", error);
+        toast.error('Failed to initialize payment');
+      }
+    } else {
+      // COD Flow
+      await createOrder(user, selectedProduct, quantity, address);
+      toast.success('Order placed successfully! Check "My Orders" for details.');
+      setOrderDialogOpen(false);
+      setSelectedProduct(null);
+      setForceUpdate(prev => prev + 1);
+    }
   };
 
   // Handle successful login/register
@@ -83,6 +146,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen m-0 p-0 bg-gray-50">
+      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       {showSidebarFooter && (
         <Sidebar
           currentPage={currentPage}
