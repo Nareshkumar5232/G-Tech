@@ -159,7 +159,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen m-0 p-0 bg-gray-50">
-      <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       {showSidebarFooter && (
         <Sidebar
           currentPage={currentPage}
