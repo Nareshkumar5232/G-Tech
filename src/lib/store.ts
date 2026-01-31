@@ -211,7 +211,8 @@ export const createOrder = async (
   user: User,
   product: Product,
   quantity: number,
-  address: Address
+  address: Address,
+  status: string = 'Pending'
 ): Promise<Order | null> => {
   try {
     console.log("🛒 Creating new order...");
@@ -220,7 +221,8 @@ export const createOrder = async (
     const payload = {
       products: [{ productId: product.id, quantity }],
       totalAmount: product.price * quantity,
-      address: addressString
+      address: addressString,
+      status: status
     };
 
     console.log("📦 Order payload:", payload);

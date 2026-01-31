@@ -101,7 +101,7 @@ export default function App() {
 
               if (verifyRes.success) {
                 // 3. Create Order in Database
-                await createOrder(user, selectedProduct, quantity, address);
+                await createOrder(user, selectedProduct, quantity, address, 'Confirmed');
                 toast.success('Payment successful! Order placed.');
                 setOrderDialogOpen(false);
                 setSelectedProduct(null);
@@ -141,7 +141,7 @@ export default function App() {
       }
     } else {
       // COD Flow
-      await createOrder(user, selectedProduct, quantity, address);
+      await createOrder(user, selectedProduct, quantity, address, 'Pending');
       toast.success('Order placed successfully! Check "My Orders" for details.');
       setOrderDialogOpen(false);
       setSelectedProduct(null);
