@@ -6,6 +6,7 @@ import {
   HardDrive,
   Headphones,
   Wifi,
+  Monitor,
   Mail,
   ShoppingBag,
   User,
@@ -83,6 +84,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
     { label: 'Used Laptops', page: 'used-laptops', icon: HardDrive },
     { label: 'Accessories', page: 'accessories', icon: Headphones },
     { label: 'Networking & CCTV', page: 'networking-cctv', icon: Wifi },
+    { label: 'TV & Monitors', page: 'tv-monitors', icon: Monitor },
     { label: 'My Cart', page: 'cart', icon: ShoppingBag },
     { label: 'Contact', page: 'contact', icon: Mail },
   ];
@@ -133,7 +135,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
               )}
               {isExpanded && (
                 <div className="text-left overflow-hidden">
-                  <div className="text-base font-semibold tracking-tight whitespace-nowrap">
+                  <div className="text-xl font-bold tracking-tight whitespace-nowrap">
                     SATURN SYSTEMS
                   </div>
                   <div className="text-[11px] text-gray-400 mt-0.5">Laptops Sales & Services</div>

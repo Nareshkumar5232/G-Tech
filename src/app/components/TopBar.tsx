@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Bell, User, ShoppingBag, Menu, ArrowLeft } from 'lucide-react';
+import { Search, User, ShoppingBag, Menu, ArrowLeft } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
 import { getCurrentUser } from '@/lib/store';
@@ -100,12 +100,6 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
 
         {/* Right Section */}
         <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
-          {/* Notifications */}
-          <button className="relative p-2 lg:p-3 hover:bg-white/10 rounded-xl transition-all duration-200 ease-in-out hover:scale-105 group">
-            <Bell className="w-4 h-4 lg:w-5 lg:h-5 text-gray-300 group-hover:text-white transition-colors" />
-            <span className="absolute top-1.5 right-1.5 lg:top-2 lg:right-2 w-2 h-2 lg:w-2.5 lg:h-2.5 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50 animate-pulse"></span>
-          </button>
-
           {/* User Profile */}
           {user ? (
             <div className="flex items-center gap-2 lg:gap-3">

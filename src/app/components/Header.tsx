@@ -60,7 +60,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
               />
             </div>
             <div className="text-left">
-              <div className="text-xl font-bold tracking-tight">SATURN SYSTEMS</div>
+              <div className="text-2xl lg:text-3xl font-bold tracking-tight">SATURN SYSTEMS</div>
               <div className="text-xs text-gray-400">Laptops Sales & Services</div>
             </div>
           </button>

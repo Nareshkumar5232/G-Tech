@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowRight, Laptop, HardDrive, Headphones, Wifi, Shield, TrendingUp, ShoppingCart, IndianRupee } from 'lucide-react';
+import { ArrowRight, Laptop, HardDrive, Headphones, Wifi, Shield, TrendingUp, ShoppingCart, IndianRupee, Monitor } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { ProductCard } from './ProductCard';
@@ -67,6 +67,13 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       description: 'Security & network solutions',
       page: 'networking-cctv',
       gradient: 'from-orange-500 to-orange-600'
+    },
+    {
+      icon: Monitor,
+      title: 'TV & Monitors',
+      description: 'Displays for work & entertainment',
+      page: 'tv-monitors',
+      gradient: 'from-pink-500 to-pink-600'
     }
   ];
 
@@ -256,7 +263,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">Why Choose G-TECH?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Why Choose SATURN SYSTEMS?</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
