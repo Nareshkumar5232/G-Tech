@@ -47,7 +47,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
 
   const brands: Brand[] = ['Dell', 'HP', 'Lenovo', 'Apple', 'ASUS', 'Acer', 'MSI', 'Samsung', 'Other'];
   const locations: TamilNaduCity[] = ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem', 'Tirunelveli', 'Vellore', 'Erode', 'Thanjavur', 'Dindigul'];
-  const categories: (ProductCategory | 'all')[] = ['all', 'New Laptops', 'Used Laptops', 'Accessories', 'Networking & CCTV'];
+  const categories: (ProductCategory | 'all')[] = ['all', 'New Laptops', 'Used Laptops', 'Accessories', 'Networking & CCTV', 'TV & Monitors'];
   const processors: string[] = ['Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'Intel Core i9', 'AMD Ryzen 3', 'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9', 'Dual Core', 'Quad Core'];
 
   const filteredAndSortedProducts = useMemo(() => {

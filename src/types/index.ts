@@ -1,6 +1,6 @@
 export type ProductCondition = 'New' | 'Used';
 
-export type ProductCategory = 'New Laptops' | 'Used Laptops' | 'Accessories' | 'Networking & CCTV';
+export type ProductCategory = 'New Laptops' | 'Used Laptops' | 'Accessories' | 'Networking & CCTV' | 'TV & Monitors';
 
 export type Brand = 'Dell' | 'HP' | 'Lenovo' | 'Apple' | 'ASUS' | 'Acer' | 'MSI' | 'Samsung' | 'Other';
 

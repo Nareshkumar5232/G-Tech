@@ -27,7 +27,8 @@ type Page =
   | 'login'
   | 'register'
   | 'my-orders'
-  | 'cart';
+  | 'cart'
+  | 'tv-monitors';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -208,6 +209,9 @@ export default function App() {
           )}
           {currentPage === 'networking-cctv' && (
             <ProductListPage category="Networking & CCTV" onOrderClick={handleOrderClick} />
+          )}
+          {currentPage === 'tv-monitors' && (
+            <ProductListPage category="TV & Monitors" onOrderClick={handleOrderClick} />
           )}
 
           {/* Contact Page */}
