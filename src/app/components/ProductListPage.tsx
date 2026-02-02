@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
-import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp, Loader2, RefreshCw } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 import { Input } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
@@ -8,8 +8,11 @@ import { Slider } from '@/app/components/ui/slider';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { Label } from '@/app/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/app/components/ui/sheet';
-import { getProducts } from '@/lib/store';
+import { getProducts, refreshProductsCache } from '@/lib/store';
 import type { Product, ProductCategory, Brand, TamilNaduCity } from '@/types';
+
+// Pagination configuration
+const PRODUCTS_PER_PAGE = 12;
 
 interface ProductListPageProps {
   category?: ProductCategory;
@@ -34,14 +37,40 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
   const [isProcessorOpen, setIsProcessorOpen] = useState(false);
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fetch products with caching
+  const fetchProducts = useCallback(async (forceRefresh = false) => {
+    try {
+      if (forceRefresh) {
+        setIsRefreshing(true);
+        const products = await refreshProductsCache();
+        setAllProducts(products || []);
+      } else {
+        const products = await getProducts();
+        setAllProducts(products || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const products = await getProducts();
-      setAllProducts(products || []);
-    };
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, priceRange, selectedBrands, selectedConditions, selectedLocations, selectedProcessors, sortBy]);
 
   const products = selectedCategory === 'all' ? allProducts : allProducts.filter(p => p.category === selectedCategory);
 
@@ -50,16 +79,18 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
   const categories: (ProductCategory | 'all')[] = ['all', 'New Laptops', 'Used Laptops', 'Accessories', 'Networking & CCTV', 'TV & Monitors'];
   const processors: string[] = ['Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'Intel Core i9', 'AMD Ryzen 3', 'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9', 'Dual Core', 'Quad Core'];
 
-  const filteredAndSortedProducts = useMemo(() => {
+  // All filtered products (without pagination)
+  const allFilteredProducts = useMemo(() => {
     let result = [...products];
 
     // Apply search filter
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       result = result.filter(
         (p) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.specs.some((spec) => spec.toLowerCase().includes(searchQuery.toLowerCase()))
+          p.name.toLowerCase().includes(query) ||
+          p.description.toLowerCase().includes(query) ||
+          p.specs.some((spec) => spec.toLowerCase().includes(query))
       );
     }
 
@@ -100,6 +131,29 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
     return result;
   }, [products, searchQuery, sortBy, priceRange, selectedBrands, selectedConditions, selectedLocations]);
 
+  // Paginated products for display
+  const filteredAndSortedProducts = useMemo(() => {
+    return allFilteredProducts.slice(0, currentPage * PRODUCTS_PER_PAGE);
+  }, [allFilteredProducts, currentPage]);
+
+  // Pagination helpers
+  const totalProducts = allFilteredProducts.length;
+  const displayedProducts = filteredAndSortedProducts.length;
+  const hasMore = displayedProducts < totalProducts;
+
+  const loadMore = useCallback(() => {
+    setIsLoadingMore(true);
+    // Simulate slight delay for smooth UX
+    setTimeout(() => {
+      setCurrentPage(prev => prev + 1);
+      setIsLoadingMore(false);
+    }, 300);
+  }, []);
+
+  const handleRefresh = useCallback(() => {
+    fetchProducts(true);
+  }, [fetchProducts]);
+
   const toggleBrand = (brand: Brand) => {
     setSelectedBrands(prev =>
       prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]
@@ -131,6 +185,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
     setSelectedConditions([]);
     setSelectedLocations([]);
     setSelectedProcessors([]);
+    setCurrentPage(1);
   };
 
   const activeFiltersCount = selectedBrands.length + selectedConditions.length + selectedLocations.length + selectedProcessors.length;
@@ -363,6 +418,17 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
                     </SelectContent>
                   </Select>
 
+                  {/* Refresh Button */}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
+                    title="Refresh products"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  </Button>
+
                   {/* Mobile Filter Button */}
                   <Sheet>
                     <SheetTrigger asChild>
@@ -446,20 +512,71 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
             </div>
 
             {/* Results Count */}
-            <div className="mb-6">
+            <div className="mb-6 flex items-center justify-between">
               <p className="text-gray-700 font-medium">
-                Showing <span className="text-blue-600 font-bold">{filteredAndSortedProducts.length}</span> product
-                {filteredAndSortedProducts.length !== 1 ? 's' : ''}
+                Showing <span className="text-blue-600 font-bold">{displayedProducts}</span> of{' '}
+                <span className="text-blue-600 font-bold">{totalProducts}</span> product
+                {totalProducts !== 1 ? 's' : ''}
               </p>
+              {isLoading && (
+                <div className="flex items-center gap-2 text-gray-500">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm">Loading...</span>
+                </div>
+              )}
             </div>
 
             {/* Product Grid */}
-            {filteredAndSortedProducts.length > 0 ? (
+            {isLoading ? (
+              // Loading skeleton
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredAndSortedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} onOrderClick={onOrderClick} />
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="bg-white rounded-lg shadow-md p-4 animate-pulse">
+                    <div className="aspect-[4/3] bg-gray-200 rounded-lg mb-4" />
+                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-4" />
+                    <div className="h-8 bg-gray-200 rounded w-1/3" />
+                  </div>
                 ))}
               </div>
+            ) : filteredAndSortedProducts.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {filteredAndSortedProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} onOrderClick={onOrderClick} />
+                  ))}
+                </div>
+
+                {/* Load More Button */}
+                {hasMore && (
+                  <div className="mt-8 text-center">
+                    <Button
+                      onClick={loadMore}
+                      disabled={isLoadingMore}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3"
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        <>
+                          Load More Products
+                          <span className="ml-2 text-blue-200">({totalProducts - displayedProducts} remaining)</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+
+                {/* All Products Loaded Message */}
+                {!hasMore && totalProducts > PRODUCTS_PER_PAGE && (
+                  <div className="mt-8 text-center">
+                    <p className="text-gray-500 text-sm">✓ All {totalProducts} products loaded</p>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-16 bg-white rounded-lg shadow-md">
                 <div className="text-gray-400 text-6xl mb-4">🔍</div>

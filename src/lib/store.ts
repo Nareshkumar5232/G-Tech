@@ -6,8 +6,21 @@ const STORAGE_KEYS = {
   USER: 'gtech_current_user',
   TOKEN: 'gtech_token',
   CART: 'gtech_cart',
-  WISHLIST: 'gtech_wishlist'
+  WISHLIST: 'gtech_wishlist',
+  PRODUCTS_CACHE: 'gtech_products_cache',
+  PRODUCTS_CACHE_TIME: 'gtech_products_cache_time'
 };
+
+// Cache configuration
+const CACHE_CONFIG = {
+  PRODUCTS_TTL: 5 * 60 * 1000, // 5 minutes cache TTL
+  PRODUCTS_STALE_TTL: 30 * 60 * 1000, // 30 minutes stale-while-revalidate
+};
+
+// In-memory cache for faster access
+let productsMemoryCache: Product[] | null = null;
+let productsCacheTimestamp: number | null = null;
+let isRevalidating = false;
 
 // Helper to get auth header
 const getAuthHeader = () => {
@@ -92,39 +105,156 @@ export const setCurrentUser = (user: User) => {
 
 // --- Product Functions ---
 
-export const getProducts = async (): Promise<Product[]> => {
+// Helper to parse products from API response
+const parseProducts = (data: any): Product[] => {
+  const items = Array.isArray(data) ? data : (data.products || []);
+  return items.map((p: any) => ({
+    ...p,
+    id: p._id || p.id,
+    category: p.category || 'New Laptops',
+    condition: p.condition || 'New',
+    images: p.images || [],
+    brand: p.brand || 'Other',
+    location: p.location || 'Chennai',
+    createdAt: p.createdAt || new Date().toISOString(),
+    specs: p.specs || [],
+  }));
+};
+
+// Load products from localStorage cache
+const loadProductsFromStorage = (): { products: Product[] | null; timestamp: number | null } => {
   try {
-    console.log("📦 Fetching products from API...");
-    const res = await axios.get(`${API_URL}/product`);
-    console.log("✅ Products API Response:", res.data);
-
-    const data = res.data;
-    const items = Array.isArray(data) ? data : (data.products || []);
-
-    if (!items.length) {
-      console.warn("⚠️ No products found in response");
-      return [];
+    const cached = localStorage.getItem(STORAGE_KEYS.PRODUCTS_CACHE);
+    const timestamp = localStorage.getItem(STORAGE_KEYS.PRODUCTS_CACHE_TIME);
+    if (cached && timestamp) {
+      return {
+        products: JSON.parse(cached),
+        timestamp: parseInt(timestamp, 10)
+      };
     }
+  } catch (e) {
+    console.warn('Failed to load products from storage cache');
+  }
+  return { products: null, timestamp: null };
+};
 
-    console.log(`✅ Found ${items.length} products`);
-    return items.map((p: any) => ({
-      ...p,
-      id: p._id || p.id,
-      category: p.category || 'New Laptops',
-      condition: p.condition || 'New',
-      images: p.images || [],
-      brand: p.brand || 'Other',
-      location: p.location || 'Chennai', // Default location
-      createdAt: p.createdAt || new Date().toISOString(),
-      specs: p.specs || [],
-    }));
+// Save products to localStorage cache
+const saveProductsToStorage = (products: Product[]): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS_CACHE, JSON.stringify(products));
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS_CACHE_TIME, Date.now().toString());
+  } catch (e) {
+    console.warn('Failed to save products to storage cache');
+  }
+};
+
+// Fetch fresh products from API
+const fetchProductsFromAPI = async (): Promise<Product[]> => {
+  console.log("📦 Fetching products from API...");
+  const res = await axios.get(`${API_URL}/product`);
+  console.log("✅ Products API Response:", res.data);
+  
+  const products = parseProducts(res.data);
+  
+  // Update both memory and storage cache
+  productsMemoryCache = products;
+  productsCacheTimestamp = Date.now();
+  saveProductsToStorage(products);
+  
+  console.log(`✅ Cached ${products.length} products`);
+  return products;
+};
+
+// Background revalidation
+const revalidateProducts = async (): Promise<void> => {
+  if (isRevalidating) return;
+  
+  isRevalidating = true;
+  try {
+    await fetchProductsFromAPI();
+    console.log('🔄 Products cache revalidated in background');
+  } catch (error) {
+    console.warn('Background revalidation failed:', error);
+  } finally {
+    isRevalidating = false;
+  }
+};
+
+export const getProducts = async (forceRefresh = false): Promise<Product[]> => {
+  const now = Date.now();
+  
+  // Check memory cache first (fastest)
+  if (!forceRefresh && productsMemoryCache && productsCacheTimestamp) {
+    const age = now - productsCacheTimestamp;
+    
+    // Fresh cache - return immediately
+    if (age < CACHE_CONFIG.PRODUCTS_TTL) {
+      console.log('⚡ Returning products from memory cache (fresh)');
+      return productsMemoryCache;
+    }
+    
+    // Stale cache - return but revalidate in background
+    if (age < CACHE_CONFIG.PRODUCTS_STALE_TTL) {
+      console.log('⚡ Returning products from memory cache (stale, revalidating...)');
+      revalidateProducts(); // Fire and forget
+      return productsMemoryCache;
+    }
+  }
+  
+  // Check localStorage cache (still fast, survives page refresh)
+  if (!forceRefresh) {
+    const { products: storedProducts, timestamp } = loadProductsFromStorage();
+    if (storedProducts && timestamp) {
+      const age = now - timestamp;
+      
+      // Populate memory cache from storage
+      productsMemoryCache = storedProducts;
+      productsCacheTimestamp = timestamp;
+      
+      if (age < CACHE_CONFIG.PRODUCTS_TTL) {
+        console.log('⚡ Returning products from storage cache (fresh)');
+        return storedProducts;
+      }
+      
+      if (age < CACHE_CONFIG.PRODUCTS_STALE_TTL) {
+        console.log('⚡ Returning products from storage cache (stale, revalidating...)');
+        revalidateProducts();
+        return storedProducts;
+      }
+    }
+  }
+  
+  // No valid cache, fetch fresh
+  try {
+    return await fetchProductsFromAPI();
   } catch (error: any) {
     console.error("❌ Fetch products failed:", error);
     if (error.response) {
       console.error("Error response:", error.response.status, error.response.data);
     }
+    
+    // Return stale cache as fallback if available
+    if (productsMemoryCache) {
+      console.log('⚠️ Returning stale cache as fallback');
+      return productsMemoryCache;
+    }
+    
     return [];
   }
+};
+
+// Force refresh products cache
+export const refreshProductsCache = async (): Promise<Product[]> => {
+  return getProducts(true);
+};
+
+// Clear products cache
+export const clearProductsCache = (): void => {
+  productsMemoryCache = null;
+  productsCacheTimestamp = null;
+  localStorage.removeItem(STORAGE_KEYS.PRODUCTS_CACHE);
+  localStorage.removeItem(STORAGE_KEYS.PRODUCTS_CACHE_TIME);
+  console.log('🗑️ Products cache cleared');
 };
 
 export const getProductById = async (id: string): Promise<Product | undefined> => {
