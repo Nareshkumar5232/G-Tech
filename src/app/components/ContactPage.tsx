@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Clock } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, Shield, Building2, FileText, Landmark } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { toast } from 'sonner';
 
@@ -111,6 +111,105 @@ export function ContactPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+
+        {/* Business Credentials & Bank Details */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Business Credentials & Trust Information</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Certificates & Registrations */}
+            <Card className="border-2 border-green-100">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+                <CardTitle className="flex items-center gap-2 text-green-700">
+                  <Shield className="w-6 h-6" />
+                  Certificates & Registrations
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <FileText className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">PAN Number</p>
+                      <p className="text-gray-800 font-semibold">ADGPA3417L</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <FileText className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">GST Number</p>
+                      <p className="text-gray-800 font-semibold">33ADGPA3417L2ZV</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Building2 className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">MSME Registration (Udyam)</p>
+                      <p className="text-gray-800 font-semibold">UDYAM-TN-02-0121032</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <FileText className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">Import & Export Licence (IEC)</p>
+                      <p className="text-gray-800 font-semibold">0404002277</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Bank Details */}
+            <Card className="border-2 border-blue-100">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                <CardTitle className="flex items-center gap-2 text-blue-700">
+                  <Landmark className="w-6 h-6" />
+                  Bank Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Building2 className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">Company Name</p>
+                      <p className="text-gray-800 font-semibold">SATURN SYSTEMS</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <FileText className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">Account Number</p>
+                      <p className="text-gray-800 font-semibold">231902000000478</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Landmark className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">Bank Name</p>
+                      <p className="text-gray-800 font-semibold">Indian Overseas Bank (IOB)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <MapPin className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-gray-500 font-medium">IFSC Code & Branch</p>
+                      <p className="text-gray-800 font-semibold">IOBA0002319</p>
+                      <p className="text-sm text-gray-600">Gill Nagar, Choolaimedu</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Trust Badge */}
+          <div className="mt-8 text-center">
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-full shadow-lg">
+              <Shield className="w-5 h-5" />
+              <span className="font-semibold">Government Registered & Verified Business</span>
+            </div>
           </div>
         </div>
       </div>

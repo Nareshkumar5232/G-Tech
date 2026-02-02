@@ -136,7 +136,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                       {item.label}
                     </span>
                   </button>
-                );
+                ); 
               })}
             </div>
           </nav>
