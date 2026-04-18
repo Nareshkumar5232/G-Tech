@@ -28,7 +28,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
     { label: 'Home', page: 'home' },
     { label: 'All Products', page: 'all-products' },
     { label: 'New Laptops', page: 'new-laptops' },
-    { label: 'Used Laptops', page: 'used-laptops' },
+    { label: 'Refurbished Laptops', page: 'refurbished-laptops' },
     { label: 'Accessories', page: 'accessories' },
     { label: 'Networking & CCTV', page: 'networking-cctv' },
     { label: 'Contact', page: 'contact' }

@@ -49,9 +49,9 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
     },
     {
       icon: HardDrive,
-      title: 'Used Laptops',
+      title: 'Refurbished Laptops',
       description: 'Quality refurbished devices',
-      page: 'used-laptops',
+      page: 'refurbished-laptops',
       gradient: 'from-green-500 to-green-600'
     },
     {
@@ -137,7 +137,7 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              New & Used Laptops at
+              New & Refurbished Laptops at
               <span className="text-blue-600"> Best Prices</span>
             </h1>
 
@@ -155,12 +155,12 @@ export function HomePage({ onNavigate, onOrderClick }: HomePageProps) {
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
               <Button
-                onClick={() => onNavigate('used-laptops')}
+                onClick={() => onNavigate('refurbished-laptops')}
                 size="lg"
                 variant="outline"
                 className="border-gray-300 text-gray-900 hover:bg-gray-100 hover:text-gray-900 px-8"
               >
-                View Used Laptops
+                View Refurbished Laptops
               </Button>
             </div>
           </div>

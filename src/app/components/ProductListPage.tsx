@@ -24,7 +24,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
   const [sortBy, setSortBy] = useState<'date' | 'price-low' | 'price-high'>('date');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200000]);
   const [selectedBrands, setSelectedBrands] = useState<Brand[]>([]);
-  const [selectedConditions, setSelectedConditions] = useState<('New' | 'Used')[]>([]);
+  const [selectedConditions, setSelectedConditions] = useState<('New' | 'Refurbished')[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<TamilNaduCity[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory | 'all'>(category || 'all');
   const [selectedProcessors, setSelectedProcessors] = useState<string[]>([]);
@@ -76,7 +76,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
 
   const brands: Brand[] = ['Dell', 'HP', 'Lenovo', 'Apple', 'ASUS', 'Acer', 'MSI', 'Samsung', 'Other'];
   const locations: TamilNaduCity[] = ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem', 'Tirunelveli', 'Vellore', 'Erode', 'Thanjavur', 'Dindigul'];
-  const categories: (ProductCategory | 'all')[] = ['all', 'New Laptops', 'Used Laptops', 'Accessories', 'Networking & CCTV', 'TV & Monitors'];
+  const categories: (ProductCategory | 'all')[] = ['all', 'New Laptops', 'Refurbished Laptops', 'Accessories', 'Networking & CCTV', 'TV & Monitors'];
   const processors: string[] = ['Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'Intel Core i9', 'AMD Ryzen 3', 'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9', 'Dual Core', 'Quad Core'];
 
   // All filtered products (without pagination)
@@ -160,7 +160,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
     );
   };
 
-  const toggleCondition = (condition: 'New' | 'Used') => {
+  const toggleCondition = (condition: 'New' | 'Refurbished') => {
     setSelectedConditions(prev =>
       prev.includes(condition) ? prev.filter(c => c !== condition) : [...prev, condition]
     );
@@ -314,7 +314,7 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
         </button>
         {isTypeOpen && (
           <div className="space-y-2">
-            {(['New', 'Used'] as const).map((condition) => (
+            {(['New', 'Refurbished'] as const).map((condition) => (
               <div key={condition} className="flex items-center space-x-2">
                 <Checkbox
                   id={`condition-${condition}`}
@@ -461,13 +461,13 @@ export function ProductListPage({ category, onOrderClick }: ProductListPageProps
                     New
                   </button>
                   <button
-                    onClick={() => toggleCondition('Used')}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedConditions.includes('Used')
+                    onClick={() => toggleCondition('Refurbished')}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${selectedConditions.includes('Refurbished')
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                   >
-                    Used
+                    Refurbished
                   </button>
 
                   {/* Popular Brand Filters */}

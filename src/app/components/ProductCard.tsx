@@ -54,7 +54,7 @@ export function ProductCard({ product, onOrderClick }: ProductCardProps) {
         <Badge
           className={`absolute top-3 left-3 ${product.condition === 'New'
               ? 'bg-green-600 hover:bg-green-700'
-              : 'bg-blue-600 hover:bg-blue-700'
+              : 'bg-orange-500 hover:bg-orange-600'
             }`}
         >
           {product.condition}

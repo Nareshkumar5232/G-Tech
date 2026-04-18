@@ -20,7 +20,7 @@ type Page =
   | 'home'
   | 'all-products'
   | 'new-laptops'
-  | 'used-laptops'
+  | 'refurbished-laptops'
   | 'accessories'
   | 'networking-cctv'
   | 'contact'
@@ -201,8 +201,8 @@ export default function App() {
           {currentPage === 'new-laptops' && (
             <ProductListPage category="New Laptops" onOrderClick={handleOrderClick} />
           )}
-          {currentPage === 'used-laptops' && (
-            <ProductListPage category="Used Laptops" onOrderClick={handleOrderClick} />
+          {currentPage === 'refurbished-laptops' && (
+            <ProductListPage category="Refurbished Laptops" onOrderClick={handleOrderClick} />
           )}
           {currentPage === 'accessories' && (
             <ProductListPage category="Accessories" onOrderClick={handleOrderClick} />

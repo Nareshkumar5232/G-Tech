@@ -49,7 +49,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
     { label: 'Home', page: 'home', icon: Home },
     { label: 'All Products', page: 'all-products', icon: Package },
     { label: 'New Laptops', page: 'new-laptops', icon: Laptop },
-    { label: 'Used Laptops', page: 'used-laptops', icon: HardDrive },
+    { label: 'Refurbished Laptops', page: 'refurbished-laptops', icon: HardDrive },
     { label: 'Accessories', page: 'accessories', icon: Headphones },
     { label: 'Networking & CCTV', page: 'networking-cctv', icon: Wifi },
     { label: 'TV & Monitors', page: 'tv-monitors', icon: Monitor },

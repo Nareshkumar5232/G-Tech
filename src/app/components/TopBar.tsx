@@ -25,7 +25,7 @@ export function TopBar({ currentPage, onNavigate, onMobileMenuToggle }: TopBarPr
       'home': 'Our Services',
       'all-products': 'All Products',
       'new-laptops': 'New Laptops',
-      'used-laptops': 'Used Laptops',
+      'refurbished-laptops': 'Refurbished Laptops',
       'accessories': 'Accessories',
       'networking-cctv': 'Networking & CCTV',
       'contact': 'Contact Us',

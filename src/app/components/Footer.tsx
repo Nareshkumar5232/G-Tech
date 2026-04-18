@@ -30,7 +30,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-gray-300 text-sm">
-              Your trusted partner for new & used laptops, refurbished computers, 
+              Your trusted partner for new & refurbished laptops, refurbished computers,
               sales & buyback, repair & services in Chennai.
             </p>
           </div>
@@ -83,7 +83,7 @@ export function Footer() {
             <div className="mt-6">
               <h4 className="font-semibold mb-2">Our Services</h4>
               <ul className="space-y-1 text-sm text-gray-300">
-                <li>• New & Used Laptops</li>
+                <li>• New & Refurbished Laptops</li>
                 <li>• Refurbished Laptops</li>
                 <li>• Sales & Buyback</li>
                 <li>• Repair & Services</li>
