@@ -67,10 +67,10 @@ export default function App() {
     if (paymentMethod === 'online') {
       let orderData;
       try {
-        // 1. Create Order on Backend
-        const { createRazorpayOrder, verifyPayment } = await import('@/lib/paymentStore');
+        // 1. Create Cashfree order on backend
+        const { createCashfreeOrder, verifyCashfreePayment } = await import('@/lib/paymentStore');
         try {
-          orderData = await createRazorpayOrder(selectedProduct.price * quantity);
+          orderData = await createCashfreeOrder(selectedProduct.price * quantity);
         } catch (err: any) {
           console.error("Backend Create Order Failed", err);
           toast.error(`Order creation failed: ${err.message || 'Unknown error'}`);
@@ -83,58 +83,51 @@ export default function App() {
           return;
         }
 
-        const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-          amount: orderData.order.amount,
-          currency: orderData.order.currency,
-          name: "G-Tech",
-          description: `Order for ${selectedProduct.name}`,
-          image: "https://example.com/your_logo",
-          order_id: orderData.order.id,
-          handler: async function (response: any) {
-            try {
-              // 2. Verify Payment
-              const verifyRes = await verifyPayment({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-              });
-
-              if (verifyRes.success) {
-                // 3. Create Order in Database
-                await createOrder(user, selectedProduct, quantity, address, 'Confirmed');
-                toast.success('Payment successful! Order placed.');
-                setOrderDialogOpen(false);
-                setSelectedProduct(null);
-                setForceUpdate(prev => prev + 1);
-              } else {
-                toast.error('Payment verification failed');
-              }
-            } catch (error) {
-              console.error(error);
-              toast.error('Payment verification failed');
-            }
-          },
-          prefill: {
-            name: address.fullName,
-            email: user.email,
-            contact: address.phoneNumber
-          },
-          theme: {
-            color: "#3399cc"
-          }
-        };
-
-        if (!(window as any).Razorpay) {
-          toast.error("Razorpay SDK not loaded. Please check your internet connection.");
+        if (!(window as any).Cashfree) {
+          toast.error("Cashfree SDK not loaded. Please check your internet connection.");
           return;
         }
 
-        const rzp1 = new (window as any).Razorpay(options);
-        rzp1.on('payment.failed', function (response: any) {
-          toast.error(response.error.description);
+        // 2. Initialize Cashfree SDK and open checkout modal
+        const cashfree = (window as any).Cashfree({
+          mode: import.meta.env.VITE_CASHFREE_ENV || "production"
         });
-        rzp1.open();
+
+        const result = await cashfree.checkout({
+          paymentSessionId: orderData.order.payment_session_id,
+          redirectTarget: "_modal"
+        });
+
+        if (result?.error) {
+          console.error("Cashfree payment error", result.error);
+          toast.error(result.error.message || 'Payment failed or cancelled');
+          return;
+        }
+
+        if (result?.paymentDetails) {
+          try {
+            // 3. Verify payment with backend
+            const verifyRes = await verifyCashfreePayment({
+              order_id: orderData.order.order_id
+            });
+
+            if (verifyRes.success) {
+              // 4. Create order in database
+              await createOrder(user, selectedProduct, quantity, address, 'Confirmed');
+              toast.success('Payment successful! Order placed.');
+              setOrderDialogOpen(false);
+              setSelectedProduct(null);
+              setForceUpdate(prev => prev + 1);
+            } else {
+              toast.error('Payment verification failed');
+            }
+          } catch (error) {
+            console.error(error);
+            toast.error('Payment verification failed');
+          }
+        } else {
+          toast.error('Payment was not completed');
+        }
 
       } catch (error: any) {
         console.error("Payment initialization unexpected error", error);
