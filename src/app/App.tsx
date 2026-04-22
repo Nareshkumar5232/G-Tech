@@ -83,6 +83,19 @@ export default function App() {
           return;
         }
 
+        console.log("Backend order response:", JSON.stringify(orderData, null, 2));
+
+        const paymentSessionId = orderData.payment_session_id
+          || orderData.order?.payment_session_id
+          || orderData.order?.paymentSessionId
+          || orderData.paymentSessionId;
+
+        if (!paymentSessionId) {
+          console.error("payment_session_id missing from backend response", orderData);
+          toast.error('Payment session ID missing. Please contact support.');
+          return;
+        }
+
         if (!(window as any).Cashfree) {
           toast.error("Cashfree SDK not loaded. Please check your internet connection.");
           return;
@@ -94,7 +107,7 @@ export default function App() {
         });
 
         const result = await cashfree.checkout({
-          paymentSessionId: orderData.order.payment_session_id,
+          paymentSessionId,
           redirectTarget: "_modal"
         });
 
