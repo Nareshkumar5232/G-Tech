@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 
-const API_URL = 'https://g-tech-backend-1.onrender.com/api';
+const API_URL = 'https://g-tech-backend-qtzi.onrender.com/api';
 const STORAGE_KEYS = {
     TOKEN: 'gtech_token',
 };
