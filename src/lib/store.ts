@@ -345,6 +345,12 @@ export const createOrder = async (
   status: string = 'Pending'
 ): Promise<Order | null> => {
   try {
+    // Check if user is authenticated
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+    if (!token) {
+      throw new Error("User not authenticated. Please login to place an order.");
+    }
+
     console.log("🛒 Creating new order...");
     const addressString = `${address.addressLine1}, ${address.city}, ${address.state} - ${address.pincode}`;
 
@@ -384,6 +390,10 @@ export const createOrder = async (
     console.error("❌ Create order failed:", error);
     if (error.response) {
       console.error("Error response:", error.response.status, error.response.data);
+      if (error.response.status === 401) {
+        console.error("Authentication failed - user may need to login again");
+        logout(); // Clear invalid token
+      }
       throw new Error(error.response.data?.message || "Failed to create order");
     }
     throw new Error(error.message || "Network error");
