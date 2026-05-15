@@ -28,6 +28,23 @@ const getAuthHeader = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+// Configure Axios defaults for better performance
+axios.defaults.timeout = 15000; // 15 seconds timeout
+
+/**
+ * Pings the backend to wake it up (useful for Render free tier)
+ */
+export const warmUpBackend = async (): Promise<void> => {
+  try {
+    console.log("🔥 Warming up backend...");
+    // Just a simple GET to wake up the server
+    await axios.get(`${API_URL}/product`, { timeout: 10000 }).catch(() => {});
+    console.log("✅ Backend warmed up");
+  } catch (e) {
+    // Ignore errors, we just want to wake it up
+  }
+};
+
 // --- Auth Functions ---
 
 export const login = async (email: string, password: string): Promise<User | null> => {

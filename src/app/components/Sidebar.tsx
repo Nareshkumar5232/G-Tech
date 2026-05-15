@@ -189,7 +189,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
                     onMobileClose?.();
                   }}
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:shadow-lg hover:shadow-blue-600/30 transition-all duration-200 ease-in-out text-sm"
-                >
+                 >
                   Register
                 </Button>
               </>

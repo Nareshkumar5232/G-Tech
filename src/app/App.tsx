@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Toaster } from '@/app/components/ui/sonner';
 import { MessageCircle } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';
@@ -12,7 +12,7 @@ import { ContactPage } from './components/ContactPage';
 import { MyOrdersPage } from './components/MyOrdersPage';
 import { CartPage } from './components/CartPage';
 import { OrderDialog } from './components/OrderDialog';
-import { getCurrentUser, createOrder } from '@/lib/store';
+import { getCurrentUser, createOrder, warmUpBackend } from '@/lib/store';
 import type { Product, Address } from '@/types';
 import { toast } from 'sonner';
 
@@ -37,6 +37,11 @@ export default function App() {
   const [forceUpdate, setForceUpdate] = useState(0);
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Warm up backend on mount
+  useEffect(() => {
+    warmUpBackend();
+  }, []);
 
   // Handle navigation
   const handleNavigate = (page: string) => {
