@@ -59,7 +59,7 @@ export function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps) {
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
               <div className="bg-white p-3 rounded-lg">
-                <img src="/logo.svg" alt="Saturn Systems" className="w-20 h-20 object-contain" />
+                <img src="/logo.png" alt="Saturn Systems" className="w-20 h-20 object-contain" />
               </div>
             </div>
             <CardTitle className="text-2xl text-center">Welcome Back</CardTitle>

@@ -45,7 +45,7 @@ export function Header({ currentPage, onNavigate }: HeaderProps) {
           >
             <div className="bg-white p-2 rounded-lg group-hover:shadow-lg transition-all flex-shrink-0">
               <img 
-                src="/logo.svg" 
+                src="/logo.png" 
                 alt="Saturn Systems" 
                 className="w-16 h-16" 
                 style={{ objectFit: 'contain' }}

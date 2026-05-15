@@ -89,7 +89,7 @@ export function Sidebar({ currentPage, onNavigate, onWidthChange, isMobileOpen =
             >
               <div className="bg-white p-2.5 rounded-xl group-hover:shadow-lg transition-all duration-200 ease-in-out flex-shrink-0">
                 <img 
-                  src="/logo.svg" 
+                  src="/logo.png" 
                   alt="Saturn Systems" 
                   className="w-12 h-12"
                   style={{ objectFit: 'contain' }}
