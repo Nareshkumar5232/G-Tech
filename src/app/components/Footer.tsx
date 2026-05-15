@@ -10,7 +10,7 @@ export function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-white p-2 rounded-lg">
                 <img 
-                  src="/logo.png" 
+                  src="/logo.svg" 
                   alt="Saturn Systems" 
                   className="w-16 h-16"
                   style={{ objectFit: 'contain' }}
